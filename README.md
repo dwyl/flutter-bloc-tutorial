@@ -17,13 +17,32 @@ app's state.
 </div>
 <br />
 
-Use these links to skip staright to the section that interests you:
+Use these links to skip straight to the section that interests you:
 
+- [A note 🗒️](#a-note-️)
 - [Why? 👀](#why-)
 - [What? 🤷‍♂️](#what-️)
   - [Core concepts 🧱](#core-concepts-)
     - [Streams](#streams)
+    - [Bloc](#bloc)
+    - [Cubit](#cubit)
+    - [Wait... so which to use?](#wait-so-which-to-use)
+  - [no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...](#no-flutter-concepts-msotrar-como-definir-um-bloc-eventos-handlers-observers-providers)
 
+
+# A note 🗒️
+
+This tutorial assumes you have prior basic knowledge of `Flutter`.
+If this is your first time using `Flutter`,
+please visit [`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
+first to learn the basics. 
+
+After that, 
+we *highly recommend* you
+follow [`dwyl/flutter-todo-list-tutorial`](https://github.com/dwyl/flutter-todo-list-tutorial).
+You will find great value in it,
+to guide you through implementing an app
+with shared state *without* `Bloc`.
 
 # Why? 👀
 
@@ -93,6 +112,14 @@ When the internet is disabled,
 a notification could be shown to the user
 stating there is no internet connection.
 
+There are a few benefits for using `Bloc`:
+- the logic is *kept out of the widgets*.
+- it's easy to test logic and widgets separately.
+"When my state ix X, widgets should be Y".
+- we can *trace user interactions*
+made in widgets through **blocs** 
+(we will talk about this in the next section).
+
 Before implementing anything, 
 we need to *understand* 
 how the `Bloc` library works.
@@ -108,6 +135,7 @@ Let's delve a bit into the core concepts
 of `BLoC` design pattern. 
 Knowing these will make it *much easier*
 to use `Bloc`, the framework.
+
 
 ### [Streams](https://bloclibrary.dev/#/coreconcepts?id=streams)
 
@@ -128,3 +156,99 @@ of events/elements.
 If an error occurs, an error event is thrown.
 If the `Stream` has emitted all of its elements,
 a "done" event is thrown.
+
+
+### [Bloc](https://bloclibrary.dev/#/coreconcepts?id=bloc)
+
+Let's start with the most "difficult" one.
+Quoting `Bloc`'s docs:
+
+> A `Bloc` is a more advanced class 
+> which relies on `events` to trigger `state` changes rather than functions. 
+> `Bloc` also extends `BlocBase`,
+> which means it has a similar public API as `Cubit`. 
+> However, rather than calling a `function` on a `Bloc` 
+> and directly emitting a new `state`, `Blocs` receive `events` 
+> and convert the incoming `events` into outgoing `states`.
+
+Phew, that was a mouthful!
+Let's break that down.
+
+<img width="1144" alt="bloc-diagram" src="https://user-images.githubusercontent.com/17494745/223118425-a8a86010-82d9-4c1e-8fde-41025d5ae88b.png">
+
+> credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
+
+We define `Events` for a given class
+that we want to manage. 
+In the example above,
+we are managing *Pets*.
+We have three possible events,
+in this scenario.
+
+We can call `petBloc.add(event)` 
+(which is a **`bloc`**)
+and pass an instance of the event to the `bloc`.
+
+The `bloc` can do some logic inside.
+For example, it makes an API call
+or accesses a service.
+
+Afterwards, the `bloc` **emits a `state`**.
+
+### [Cubit](https://bloclibrary.dev/#/coreconcepts?id=cubit) 
+
+A `Cubit` is a **much simpler, minimalistic version of a `Bloc`**.
+Unlike `Bloc`,
+the `Cubit` exposes functions that can be invoked
+to trigger state changes.
+
+Check the following diagram.
+
+<img width="1127" alt="cubit-diagarm" src="https://user-images.githubusercontent.com/17494745/223120206-dee22295-94f4-472a-803d-45ca9f3cab45.png">
+
+> credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
+
+In `Cubit`, 
+although similar,
+differ from `Bloc` because
+**they don't have events**.
+The `Cubit` has *methods*,
+there is no need to pass instances of `events`
+like we do in `Blocs`.
+
+Inside these methods you would write your logic
+(making a call to an API, for example),
+and inside the same method you would also emit state.
+
+
+### Wait... so which to use?
+
+You may be wondering yourself
+"Which one should I choose?".
+As always, the answer is... **it depends**.
+
+|    |       **Cubit**      |              **Bloc**              |
+|:---------------:|:-----------:|:----------------------------------:|
+| **Simplicity**                     | <ul><li>states</li><li>functions</li></ul> | <ul><li>states</li><li>events</li><li>event handlers</li></ul> |
+| **Traceability**                   |    | Transition (onTransition())      |
+| **Advanced Event Transformations** |    | EventTransformer                   |
+
+`Cubit` shines with its simplicity
+and it's better suited for simple use cases.
+If your team is struggling to model event transitions,
+you might want to start with `Cubits`.
+
+However, if you value traceability 
+or are havinga  hard time mocking cubits for widget tests,
+you might want to use `Blocs`.
+
+If you're unsure of the event-driven approach,
+start with `Cubit`.
+You can always refactor the code later on 
+to a `Bloc` when you have a clearer idea
+of the possible events of your application.
+
+
+
+
+## no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...
