@@ -39,7 +39,6 @@ Use these links to skip straight to the section that interests you:
   - [Before You Start! 💡](#before-you-start-)
   - [0. Create a new `Flutter`project](#0-create-a-new-flutterproject)
   - [](#)
-  - [no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...](#no-flutter-concepts-msotrar-como-definir-um-bloc-eventos-handlers-observers-providers)
 
 
 # A note 🗒️
@@ -582,8 +581,3 @@ with `Bloc`!
 
 ##
 
-
-
-
-
-## no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...
