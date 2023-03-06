@@ -36,6 +36,7 @@ Use these links to skip straight to the section that interests you:
     - [Listening to state changes with `BlocListener`](#listening-to-state-changes-with-bloclistener)
     - [`BlocConsumer`](#blocconsumer)
 - [How? 💻](#how-)
+  - [Before You Start! 💡](#before-you-start-)
   - [no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...](#no-flutter-concepts-msotrar-como-definir-um-bloc-eventos-handlers-observers-providers)
 
 
@@ -500,6 +501,17 @@ BlocConsumer<PetBloc, PetState>(
 ```
 
 # How? 💻
+
+## Before You Start! 💡
+
+Before you attempt to follow this tutorial,
+make sure you have everything installed 
+on your computer.
+
+If you want a guide on how to install `Flutter`
+and the needed dependencies,
+follow our guide in `dwyl/learn-flutter`
+in https://github.com/dwyl/learn-flutter#install-%EF%B8%8F.
 
 
 
