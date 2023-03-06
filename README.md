@@ -27,6 +27,15 @@ Use these links to skip straight to the section that interests you:
     - [Bloc](#bloc)
     - [Cubit](#cubit)
     - [Wait... so which to use?](#wait-so-which-to-use)
+  - [`BLoC` concepts in Flutter 🦋](#bloc-concepts-in-flutter-)
+    - [Defining a `Bloc`](#defining-a-bloc)
+    - [`Bloc` Events](#bloc-events)
+    - [`Bloc` State](#bloc-state)
+    - [Dependency injection with `BlocProvider`](#dependency-injection-with-blocprovider)
+    - [Making UI *react* to Bloc state changes with `BlocBuilder`](#making-ui-react-to-bloc-state-changes-with-blocbuilder)
+    - [Listening to state changes with `BlocListener`](#listening-to-state-changes-with-bloclistener)
+    - [`BlocConsumer`](#blocconsumer)
+- [How? 💻](#how-)
   - [no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...](#no-flutter-concepts-msotrar-como-definir-um-bloc-eventos-handlers-observers-providers)
 
 
@@ -247,6 +256,250 @@ start with `Cubit`.
 You can always refactor the code later on 
 to a `Bloc` when you have a clearer idea
 of the possible events of your application.
+
+If you want to see a more in-depth
+comparison between the two, 
+please visit
+https://bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc.
+
+
+## `BLoC` concepts in Flutter 🦋
+
+Now that we are aware of the most important `Bloc` concepts,
+let's see how these could be implemented in Flutter.
+
+### Defining a `Bloc`
+
+To create a `bloc` in Flutter,
+we need to:
+- provide an initial state.
+- set up event listeneders and handlers.
+- add events to `bloc` via `bloc.add`.
+
+Check the following piece of code.
+
+```dart
+class PetBloc extends Bloc<PetEvent, PetState> {
+    final PetRepo repo;
+
+    // Defining the class
+    PetBloc(this.repo)) : super(PetInitial()) {
+        on<LoadPet>(_loadPet);
+        on<DeletePet>(_deletePet);
+    }
+
+    // LoadPet event handler
+    _loadPet(LoadPet event, Emitter<PetState> emit) async {
+        emit(PetLoading());
+        var pet = await repo.getById(event.petId).first;
+        emit(PetLoaded(pet))
+    }
+
+    // DeletePet event handler
+    _deletePet(DeletePet event, Emitter<PetState> emit) async {
+        emit(PetLoading());
+        var pet = await repo.delete(event.petId);
+        emit(PetDeleted(pet))
+    }
+}
+```
+
+We are defining `PetBloc`,
+which extends the [`Bloc`](https://pub.dev/documentation/bloc/latest/bloc/Bloc-class.html) 
+class.
+We define `PetBloc`
+with the `PetState` base class
+and `PetEvent` base class.
+
+The `Bloc` class requires us to register
+event handlers via `on<Event>`,
+which is what is done in the constructor.
+
+### `Bloc` Events
+
+**Events** are necessary to define `Blocs`.
+When defining **`Bloc Events`**,
+we should follow some guidelines.
+
+- have a "root"/base calss for event (`PetEvent`).
+- use [`Equatable`](https://pub.dev/packages/equatable),
+a library that allows us to make better equality comparisons 
+between class instances.
+Having this will prevent duplicate events 
+from triggering back-to-back.
+
+```dart
+abstract class PetEvent extends Equatable {
+    const PetEvent()
+
+    @override
+    List<Object> get props => [];
+}
+
+class LoadPet extends PetEvent {
+    final String petId;
+
+    const LoadPet(this.petId);
+
+    @override
+    List<Object> get props => [this.petId];
+}
+```
+
+### `Bloc` State
+
+A **State** is what is emitted by the `bloc`.
+In fact, the app UI will change 
+according to state changes.
+
+Similarly to `Bloc Events`,
+we can leverage [`Equatable`](https://pub.dev/packages/equatable)
+to avoid triggering duplicate emissions of the same state
+if nothing has changed.
+
+```dart
+abstract class PetState extends Equatable {
+    const PetState()
+
+    @override
+    List<Object> get props => [];
+}
+
+class PetInitial extends PetState {}
+class PetDeleted extends PetState {}
+class PetLoading extends PetState {}
+```
+
+
+### Dependency injection with `BlocProvider`
+
+**`BlocProvider`** is a Flutter widget
+that creates and provides access
+to a `Bloc` to all of its children below
+on the widget tree.
+
+![bloc-provider](https://user-images.githubusercontent.com/17494745/223143702-faae2b4b-a13c-47cd-b697-a925935c816a.png)
+
+> photocredits go to https://www.mitrais.com/news-updates/getting-started-with-flutter-bloc-pattern/.
+
+We instantiate `BlocProvider`
+like so:
+
+```dart
+BlocProvider(
+    create: (context) => 
+        PetBloc(
+            Provider.of<PetRepo>(context, listen: false)
+        )
+)
+```
+
+With this widget,
+we can dependency inject widgets
+(which is great for testing)
+and allow *other widgets*
+to make calls to the `bloc`.
+
+You can check in the piece of code below
+how you can "get" the `bloc` from the tree.
+
+```dart
+BlocProvider.of<PetsBloc>(context)
+    .add(LoadPets(widget.householdId, PetStatus.All))
+```
+
+
+### Making UI *react* to Bloc state changes with `BlocBuilder`
+
+**`BlocBuilder`** is a widget that helps us
+rebuild the UI based on `bloc` state changes.
+This widget rebuilds the UI every time
+a `bloc`/`cubit` emits a new state.
+
+Here's how it can be used in practice.
+
+```dart
+BlocBuilder<PetBloc, PetState>(
+    builder: (context, state) {
+        if (state is PetLoading) {
+            // Show loading icon
+        }
+        if (state is PetFailed) {
+            // Show failed text
+        }
+        if (state is PetLoaded) {
+            // Show loaded text
+        }
+
+        // Default return
+        return Container()
+    }
+)
+```
+
+
+### Listening to state changes with `BlocListener`
+
+**`BlocListener`** is a widget
+that *listens* to a `bloc` state change
+and executes code when the state changes.
+
+A state change will trigger a rerun 
+of the listener function.
+You don't want to create widgets here,
+but you can surely set a new state, 
+or change the navigation to another route,
+or even show a snackbar notification!
+
+Here's how you can use `BlocListener`.
+
+```dart
+BlocListener<PetBloc, PetState>(
+    listener: (context, state) {
+        // Change navigation route
+        if (state is PetDeleted) {
+            Navigator.of(context).pop();
+        }
+
+        // Show a snackbar
+        if (state is PetUpdated) {
+            ScaffoldMessenger.of(context).showSnackbar(
+                SnackBar(content: Text("Pet updated!"))
+            )
+        }
+
+    }
+)
+```
+
+
+### `BlocConsumer`
+
+If you want to both build widgets
+according to state changes *and*
+listen to state changes events,
+you can inclusively use 
+the `BlocConsumer` widget!
+
+This widget basically
+combines `BlocListener`
+and `BlocBuilder` 
+into a single widget!
+
+Here's how you may use it:
+
+```dart
+BlocConsumer<PetBloc, PetState>(
+  listener: (context, state) {
+    // do stuff here based on PetBloc's state
+  },
+  builder: (context, state) {
+    // return widget here based on BlocA's state
+  }
+)
+```
+
+# How? 💻
 
 
 
