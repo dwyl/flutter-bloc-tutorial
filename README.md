@@ -37,6 +37,8 @@ Use these links to skip straight to the section that interests you:
     - [`BlocConsumer`](#blocconsumer)
 - [How? 💻](#how-)
   - [Before You Start! 💡](#before-you-start-)
+  - [0. Create a new `Flutter`project](#0-create-a-new-flutterproject)
+  - [](#)
   - [no `flutter concepts`, msotrar como definir um bloc, eventos, handlers, observers, providers...](#no-flutter-concepts-msotrar-como-definir-um-bloc-eventos-handlers-observers-providers)
 
 
@@ -502,6 +504,16 @@ BlocConsumer<PetBloc, PetState>(
 
 # How? 💻
 
+We are going to be building 
+a Todo list app, 
+where each todo item has a timer.
+
+The user should be able 
+to set the item 
+as *done*
+and start/stop the item pertaining
+to the todo item.
+
 ## Before You Start! 💡
 
 Before you attempt to follow this tutorial,
@@ -512,6 +524,64 @@ If you want a guide on how to install `Flutter`
 and the needed dependencies,
 follow our guide in `dwyl/learn-flutter`
 in https://github.com/dwyl/learn-flutter#install-%EF%B8%8F.
+
+## 0. Create a new `Flutter`project
+
+If you want to create a new project,
+we have created a small guide for you 
+in https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
+
+Follow the steps. 
+After this,
+your `lib/main.dart` file should look like this.
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MainApp());
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text('Hello World!'),
+        ),
+      ),
+    );
+  }
+}
+```
+
+If you run the application,
+you will see the following screen.
+
+<p align='center'>
+    <img width="250" alt="cubit-diagarm" src="https://user-images.githubusercontent.com/17494745/223190180-c47dc5fa-b237-47c7-95f9-b28278021a3f.png">
+</p>
+
+> **Note**
+>
+> If you are having trouble 
+> debugging the `Flutter` project...
+> 
+> To run on a real device, 
+> check https://github.com/dwyl/flutter-stopwatch-tutorial#running-on-a-real-device.
+> 
+> To run on a simulator, check https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
+
+
+Now we are ready 
+to start to implement our project
+with `Bloc`!
+
+##
+
 
 
 
