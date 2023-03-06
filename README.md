@@ -19,6 +19,11 @@ app's state.
 
 Use these links to skip staright to the section that interests you:
 
+- [Why?](#why)
+- [What?](#what)
+  - [Core concepts](#core-concepts)
+
+
 # Why?
 
 If you've worked with `Flutter`,
@@ -63,6 +68,38 @@ and do the heavy lifting for you.
 Examples include
 [Riverpod](https://riverpod.dev/),
 [Provider](https://pub.dev/packages/provider)
-and [**Block**](https://bloclibrary.dev/#/),
+and [**Bloc**](https://bloclibrary.dev/#/),
 where the latter will be the focus of this tutorial.
+
+# What?
+
+`BLoC` is actually an acronym for 
+**B**usiness **L**ogic **C**omponents,
+and is effectively a design pattern created by Google
+that *separates* business logic from the presentation layer.
+
+From this concept arose [`Bloc`](https://bloclibrary.dev/#/),
+a state management library created by 
+[Felix Angelov](https://github.com/felangel)
+which aims to *easily* implement this design pattern
+in Flutter apps.
+
+For every interaction that is made in the application,
+**state should emerge from it**. 
+For example, when you make an API call,
+the app should show a loading animation (**loading state**).
+When the internet is disabled,
+a notification could be shown to the user
+stating there is no internet connection.
+
+Before implementing anything, 
+we need to *understand* 
+how the `Bloc` library works.
+
+The following sections take inspiration 
+from the official [`Bloc` docs](https://bloclibrary.dev/#/gettingstarted).
+If you want a more in-depth explanation,
+we highly encourage you to check them.
+
+## Core concepts
 
