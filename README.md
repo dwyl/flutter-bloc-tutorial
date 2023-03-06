@@ -19,12 +19,13 @@ app's state.
 
 Use these links to skip staright to the section that interests you:
 
-- [Why?](#why)
-- [What?](#what)
-  - [Core concepts](#core-concepts)
+- [Why? 👀](#why-)
+- [What? 🤷‍♂️](#what-️)
+  - [Core concepts 🧱](#core-concepts-)
+    - [Streams](#streams)
 
 
-# Why?
+# Why? 👀
 
 If you've worked with `Flutter`,
 you probably came across **stateful widgets**.
@@ -71,7 +72,7 @@ Examples include
 and [**Bloc**](https://bloclibrary.dev/#/),
 where the latter will be the focus of this tutorial.
 
-# What?
+# What? 🤷‍♂️
 
 `BLoC` is actually an acronym for 
 **B**usiness **L**ogic **C**omponents,
@@ -101,5 +102,29 @@ from the official [`Bloc` docs](https://bloclibrary.dev/#/gettingstarted).
 If you want a more in-depth explanation,
 we highly encourage you to check them.
 
-## Core concepts
+## Core concepts 🧱
 
+Let's delve a bit into the core concepts
+of `BLoC` design pattern. 
+Knowing these will make it *much easier*
+to use `Bloc`, the framework.
+
+### [Streams](https://bloclibrary.dev/#/coreconcepts?id=streams)
+
+**Streams** are the cornerstone of `BLoC`.
+A `Stream` is an *an order of asynchronous events*.
+Quoting `Bloc`'s docs:
+
+> If you're unfamiliar with `Streams`,
+> just think of a pipe with water flowing through it. 
+> The pipe is the `Stream` and the water is the asynchronous data.
+
+It's like an [Iterable](https://en.wikipedia.org/wiki/Iterator),
+but instead of getting the next event when you ask for it,
+the `Stream` *tells you* there's an event when it's ready.
+
+A `Stream` provides a way to receive a sequence
+of events/elements.
+If an error occurs, an error event is thrown.
+If the `Stream` has emitted all of its elements,
+a "done" event is thrown.
