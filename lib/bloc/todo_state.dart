@@ -1,6 +1,5 @@
 part of 'todo_bloc.dart';
 
-@immutable
 abstract class TodoState {
   final List<TodoItem> items;
   const TodoState({required this.items});

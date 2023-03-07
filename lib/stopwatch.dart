@@ -2,7 +2,7 @@
 // Check https://github.com/dwyl/flutter-stopwatch-tutorial#persisting-between-sessions-and-extending-stopwatch-capabilities.
 class StopwatchEx {
   final Stopwatch _stopWatch = Stopwatch();
-  
+
   Duration _initialOffset;
 
   StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;

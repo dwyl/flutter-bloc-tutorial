@@ -11,7 +11,10 @@ final List<TodoItem> mockItems = [
   TodoItem(description: "todo two", id: "2", completed: true)
 ];
 
+// This is the TodoBloc, 
+// the bloc that manages the list of todos.
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
+  
   // List holding the todo items
   final List<TodoItem> _todoItems = mockItems;
   List<TodoItem> get items => _todoItems;

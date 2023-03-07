@@ -1,6 +1,5 @@
 part of 'todo_bloc.dart';
 
-@immutable
 abstract class TodoEvent extends Equatable {
   const TodoEvent();
 

@@ -73,10 +73,11 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// Widget that controls the item card
 class ItemCard extends StatefulWidget {
-  TodoItem item;
+  final TodoItem item;
 
-  ItemCard({required this.item, super.key});
+  const ItemCard({required this.item, super.key});
 
   @override
   State<ItemCard> createState() => _ItemCardState();
@@ -137,10 +138,14 @@ class _ItemCardState extends State<ItemCard> {
             // Create a ToggleTodo event to toggle the `complete` field
             BlocProvider.of<TodoBloc>(context).add(ToggleTodoEvent(widget.item));
           },
+
+          // Checkbox
           leading: Checkbox(
             value: widget.item.completed,
             onChanged: (value) => {},
           ),
+
+          // Start and stop timer with stopwatch text
           trailing: Wrap(
             children: [
               Column(
@@ -158,6 +163,8 @@ class _ItemCardState extends State<ItemCard> {
               )
             ],
           ),
+
+          // Todo item description
           title: Text(widget.item.description),
         ),
       ),
