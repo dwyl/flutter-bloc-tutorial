@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
+import 'package:todo/stopwatch.dart';
 import 'package:todo/todo.dart';
+import 'package:todo/utils.dart';
 import 'package:uuid/uuid.dart';
 
-Uuid uuid = Uuid();
+Uuid uuid = const Uuid();
 
 void main() {
   runApp(const MainApp());
@@ -69,26 +73,93 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class ItemCard extends StatelessWidget {
+class ItemCard extends StatefulWidget {
   TodoItem item;
 
   ItemCard({required this.item, super.key});
+
+  @override
+  State<ItemCard> createState() => _ItemCardState();
+}
+
+class _ItemCardState extends State<ItemCard> {
+  // Stopwatch to be displayed
+  late StopwatchEx _stopwatch;
+
+  // Used to re-render the text showing the timer
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
+
+    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+
+    // Timer to rerender the page so the text shows the seconds passing by
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (_stopwatch.isRunning) {
+        setState(() {});
+      }
+    });
+  }
+
+  // Start and stop timer button handler
+  handleButtonClick() {
+    // If timer is ongoing, we stop the stopwatch and the timer in the todo item.
+    if (_stopwatch.isRunning) {
+      widget.item.stopTimer();
+      _stopwatch.stop();
+
+      // Re-render
+      setState(() {});
+    }
+
+    // If we are to start timer, start the timer in todo item and stopwatch.
+    else {
+      widget.item.startTimer();
+      _stopwatch.start();
+
+      // Re-render
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
       elevation: 6,
-      child: ListTile(
-        onTap: () {
-          // Create a ToggleTodo event to toggle the `complete` field
-          BlocProvider.of<TodoBloc>(context).add(ToggleTodoEvent(item));
-        },
-        leading: Checkbox(
-          value: item.completed,
-          onChanged: (value) => {},
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 70),
+        child: ListTile(
+          onTap: () {
+            // Create a ToggleTodo event to toggle the `complete` field
+            BlocProvider.of<TodoBloc>(context).add(ToggleTodoEvent(widget.item));
+          },
+          leading: Checkbox(
+            value: widget.item.completed,
+            onChanged: (value) => {},
+          ),
+          trailing: Wrap(
+            children: [
+              Column(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
+                      elevation: 0,
+                    ),
+                    onPressed: handleButtonClick,
+                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
+                  ),
+                  Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
+                ],
+              )
+            ],
+          ),
+          title: Text(widget.item.description),
         ),
-        title: Text(item.description),
       ),
     );
   }

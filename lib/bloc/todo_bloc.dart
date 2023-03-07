@@ -7,8 +7,8 @@ part 'todo_event.dart';
 part 'todo_state.dart';
 
 final List<TodoItem> mockItems = [
-  const TodoItem(description: "todo one", id: "1"),
-  const TodoItem(description: "todo two", id: "2", completed: true)
+  TodoItem(description: "todo one", id: "1"),
+  TodoItem(description: "todo two", id: "2", completed: true)
 ];
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
