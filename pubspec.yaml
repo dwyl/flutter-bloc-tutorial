@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.0.0
+  bloc_test: ^9.1.1
   equatable: ^2.0.0
   uuid: ^3.0.6
 
