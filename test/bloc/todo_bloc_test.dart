@@ -18,9 +18,27 @@ void main() {
         TodoItem newTodoItem = TodoItem(description: "todo description", id: "id-1");
         bloc.add(AddTodoEvent(newTodoItem));
       },
-      expect: () => [
-        isA<TodoAddedState>().having((obj) => obj.items.length, 'length', 3)
-      ],
+      expect: () => [isA<TodoAddedState>().having((obj) => obj.items.length, 'length', 3)],
+    );
+
+    blocTest(
+      'emits [TodoDeletedState] when RemoveTodoEvent is created',
+      build: () => TodoBloc(),
+      act: (bloc) {
+        TodoItem firstTodoItem = bloc.items.first;
+        bloc.add(RemoveTodoEvent(firstTodoItem));
+      },
+      expect: () => [isA<TodoDeletedState>()],
+    );
+
+    blocTest(
+      'emits [ToggleTodoState] when ToggleTodoEvent is created',
+      build: () => TodoBloc(),
+      act: (bloc) {
+        TodoItem firstTodoItem = bloc.items.first;
+        bloc.add(ToggleTodoEvent(firstTodoItem));
+      },
+      expect: () => [isA<TodoToggledState>()],
     );
   });
 }
