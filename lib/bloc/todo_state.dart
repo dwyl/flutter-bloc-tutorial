@@ -1,39 +1,26 @@
 part of 'todo_bloc.dart';
 
-abstract class TodoState {
-  final List<TodoItem> items;
-  const TodoState({required this.items});
-
-  @override
-  List<Object> get props => [];
+abstract class TodoState extends Equatable {
+  const TodoState();
 }
 
 
 // Initial TodoBloc state
 class TodoInitialState extends TodoState {
-  const TodoInitialState({required super.items});
+  @override
+  List<Object> get props => [];
 }
 
-// TodoBloc state when a todo item is added
-class TodoAddedState extends TodoState {
+// TodoBloc state when the todo item list is loaded
+class TodoListLoadedState extends TodoState {
   final List<TodoItem> items;
-  const TodoAddedState({required this.items}) : super(items: items);
+  const TodoListLoadedState({this.items = const []});
   @override
   List<Object> get props => [items];
 }
 
-// TodoBloc state when a todo item is removed from the list
-class TodoDeletedState extends TodoState {
-  final List<TodoItem> items;
-  const TodoDeletedState({required this.items}) : super(items: items);
+// TodoBloc state when a todo item errors when loading
+class TodoListErrorState extends TodoState {
   @override
-  List<Object> get props => [items];
-}
-
-// TodoBloc state when a todo item is toggled inside the list
-class TodoToggledState extends TodoState {
-  final List<TodoItem> items;
-  const TodoToggledState({required this.items}) : super(items: items);
-  @override
-  List<Object> get props => [items];
+  List<Object> get props => [];
 }

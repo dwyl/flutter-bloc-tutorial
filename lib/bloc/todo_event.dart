@@ -2,7 +2,10 @@ part of 'todo_bloc.dart';
 
 abstract class TodoEvent extends Equatable {
   const TodoEvent();
+}
 
+// Event to kick start the todo list event
+class TodoListStarted extends TodoEvent {
   @override
   List<Object> get props => [];
 }

@@ -20,7 +20,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TodoBloc(),
+      create: (context) => TodoBloc()..add(TodoListStarted()),
       child: HomePage(),
     );
   }
@@ -33,41 +33,49 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(home: Scaffold(body: BlocBuilder<TodoBloc, TodoState>(
       builder: (context, state) {
-        int numItemsLeft = state.items.where((element) => element.completed).length;
-        List<TodoItem> items = state.items;
+        // If the list is loaded
+        if (state is TodoListLoadedState) {
+          int numItemsLeft = state.items.where((element) => element.completed).length;
+          List<TodoItem> items = state.items;
 
-        return ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          children: [
-            // Textfield to add new todo item
-            TextField(
-              controller: txtFieldController,
-              decoration: const InputDecoration(
-                labelText: 'What do we need to do?',
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            children: [
+              // Textfield to add new todo item
+              TextField(
+                controller: txtFieldController,
+                decoration: const InputDecoration(
+                  labelText: 'What do we need to do?',
+                ),
+                onSubmitted: (value) {
+                  // Create new item and create AddTodo event
+                  TodoItem newTodoItem = TodoItem(description: value, id: uuid.v4());
+                  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+
+                  // Clear textfield
+                  txtFieldController.clear();
+                },
               ),
-              onSubmitted: (value) {
-                // Create new item and create AddTodo event
-                TodoItem newTodoItem = TodoItem(description: value, id: uuid.v4());
-                BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
-                // Clear textfield
-                txtFieldController.clear();
-              },
-            ),
+              const SizedBox(height: 42),
 
-            const SizedBox(height: 42),
+              // Title for items left
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text('$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+              ),
 
-            // Title for items left
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text('$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
-            ),
+              // List of items
+              if (items.isNotEmpty) const Divider(height: 0),
+              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+            ],
+          );
+        }
 
-            // List of items
-            if (items.isNotEmpty) const Divider(height: 0),
-            for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
-          ],
-        );
+        // If the state of the TodoItemList is not loaded, we show error.
+        else {
+          return const Center(child: Text("Error loading items list."));
+        }
       },
     )));
   }
@@ -136,7 +144,7 @@ class _ItemCardState extends State<ItemCard> {
         child: ListTile(
           onTap: () {
             // Create a ToggleTodo event to toggle the `complete` field
-            BlocProvider.of<TodoBloc>(context).add(ToggleTodoEvent(widget.item));
+            context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
           },
 
           // Checkbox
