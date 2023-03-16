@@ -8,11 +8,18 @@ import 'package:todo/todo.dart';
 import 'package:todo/utils.dart';
 import 'package:uuid/uuid.dart';
 
+// Uuid to generate Ids for the todos
 Uuid uuid = const Uuid();
 
+// Keys used for testing
+final textfieldKey = UniqueKey();
+final itemsLeftStringKey = UniqueKey();
+
+// coverage:ignore-start
 void main() {
   runApp(const MainApp());
 }
+// coverage:ignore-end
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -39,6 +46,7 @@ class HomePage extends StatelessWidget {
           List<TodoItem> items = state.items;
 
           return ListView(
+            key: textfieldKey,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
             children: [
               // Textfield to add new todo item
@@ -62,7 +70,7 @@ class HomePage extends StatelessWidget {
               // Title for items left
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: Text('$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+                child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
               ),
 
               // List of items
