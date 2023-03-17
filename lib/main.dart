@@ -14,6 +14,7 @@ Uuid uuid = const Uuid();
 // Keys used for testing
 final textfieldKey = UniqueKey();
 final itemsLeftStringKey = UniqueKey();
+final itemCardWidgetKey = UniqueKey();
 
 // coverage:ignore-start
 void main() {
@@ -33,8 +34,20 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // https://stackoverflow.com/questions/61425969/is-it-okay-to-use-texteditingcontroller-in-statelesswidget-in-flutter
   TextEditingController txtFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    txtFieldController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +55,15 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         // If the list is loaded
         if (state is TodoListLoadedState) {
-          int numItemsLeft = state.items.where((element) => element.completed).length;
+          int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
           List<TodoItem> items = state.items;
 
           return ListView(
-            key: textfieldKey,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
             children: [
               // Textfield to add new todo item
               TextField(
+                key: textfieldKey,
                 controller: txtFieldController,
                 decoration: const InputDecoration(
                   labelText: 'What do we need to do?',
@@ -121,6 +134,12 @@ class _ItemCardState extends State<ItemCard> {
     });
   }
 
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   // Start and stop timer button handler
   handleButtonClick() {
     // If timer is ongoing, we stop the stopwatch and the timer in the todo item.
@@ -145,6 +164,7 @@ class _ItemCardState extends State<ItemCard> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      key: itemCardWidgetKey,
       color: Colors.white,
       elevation: 6,
       child: Container(
