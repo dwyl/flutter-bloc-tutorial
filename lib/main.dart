@@ -15,6 +15,7 @@ Uuid uuid = const Uuid();
 final textfieldKey = UniqueKey();
 final itemsLeftStringKey = UniqueKey();
 final itemCardWidgetKey = UniqueKey();
+final itemCardTimerButtonKey = UniqueKey();
 
 // coverage:ignore-start
 void main() {
@@ -176,10 +177,17 @@ class _ItemCardState extends State<ItemCard> {
           },
 
           // Checkbox
-          leading: Checkbox(
-            value: widget.item.completed,
-            onChanged: (value) => {},
-          ),
+          leading: widget.item.completed
+              ? const Icon(
+                  Icons.task_alt,
+                  color: Colors.blue,
+                  size: 18.0,
+                )
+              : const Icon(
+                  Icons.radio_button_unchecked,
+                  color: Colors.blue,
+                  size: 18.0,
+                ),
 
           // Start and stop timer with stopwatch text
           trailing: Wrap(
@@ -187,6 +195,7 @@ class _ItemCardState extends State<ItemCard> {
               Column(
                 children: [
                   ElevatedButton(
+                    key: itemCardTimerButtonKey,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
                       elevation: 0,
