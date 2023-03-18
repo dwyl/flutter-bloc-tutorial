@@ -135,6 +135,8 @@ class _ItemCardState extends State<ItemCard> {
     });
   }
 
+  // Timer needs to be disposed when widget is destroyed to avoid memory leaks
+  // https://stackoverflow.com/questions/42448410/how-can-i-run-a-unit-test-when-the-tapped-widget-launches-a-timer
   @override
   void dispose() {
     _timer.cancel();
@@ -176,7 +178,7 @@ class _ItemCardState extends State<ItemCard> {
             context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
           },
 
-          // Checkbox
+          // Checkbox-style icon showing if it's completed or not
           leading: widget.item.completed
               ? const Icon(
                   Icons.task_alt,
