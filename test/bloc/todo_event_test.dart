@@ -12,21 +12,21 @@ void main() {
     });
 
     group('AddTodoEvent', () {
-      final item = TodoItem(description: "description", id: "id-0");
+      final item = TodoItem(description: "description");
       test('supports value comparison', () {
         expect(AddTodoEvent(item), AddTodoEvent(item));
       });
     });
 
     group('RemoveTodoEvent', () {
-      final item = TodoItem(description: "description", id: "id-0");
+      final item = TodoItem(description: "description");
       test('supports value comparison', () {
         expect(RemoveTodoEvent(item), RemoveTodoEvent(item));
       });
     });
 
     group('ToggleTodoEvent', () {
-      final item = TodoItem(description: "description", id: "id-0");
+      final item = TodoItem(description: "description");
       test('supports value comparison', () {
         expect(ToggleTodoEvent(item), ToggleTodoEvent(item));
       });

@@ -1,14 +1,18 @@
+import 'package:uuid/uuid.dart';
+
+// Uuid to generate Ids for the todos
+Uuid uuid = const Uuid();
+
 /// Todo class.
 /// Each `Todo` has an `id`, `description` and `completed` boolean field.
 class TodoItem {
-  final String id;
+  final String id = uuid.v4();
   final String description;
   final bool completed;
   final List<ItemTimer> _timersList = [];
 
   TodoItem({
     required this.description,
-    required this.id,
     this.completed = false,
   });
 

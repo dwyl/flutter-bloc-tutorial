@@ -5,14 +5,12 @@ import 'package:todo/todo.dart';
 
 void main() {
   test('Cumulative duration after starting and stopping timer should be more than 0', () {
-    const id = "id1";
     const description = "description";
 
-    final todoItem = TodoItem(description: description, id: id);
+    final todoItem = TodoItem(description: description);
 
     // Checking attributes
     expect(todoItem.description, description);
-    expect(todoItem.id, id);
 
     // Start and stop timer
     todoItem.startTimer();
@@ -29,14 +27,12 @@ void main() {
   });
 
   test('Start timer multiple times and stopping timer will not error out', () {
-    const id = "id1";
     const description = "description";
 
-    final todoItem = TodoItem(description: description, id: id);
+    final todoItem = TodoItem(description: description);
 
     // Checking attributes
     expect(todoItem.description, description);
-    expect(todoItem.id, id);
 
     // Start timers three times
     todoItem.startTimer();

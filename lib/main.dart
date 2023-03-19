@@ -6,10 +6,6 @@ import 'package:todo/bloc/todo_bloc.dart';
 import 'package:todo/stopwatch.dart';
 import 'package:todo/todo.dart';
 import 'package:todo/utils.dart';
-import 'package:uuid/uuid.dart';
-
-// Uuid to generate Ids for the todos
-Uuid uuid = const Uuid();
 
 // Keys used for testing
 final textfieldKey = UniqueKey();
@@ -71,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 onSubmitted: (value) {
                   // Create new item and create AddTodo event
-                  TodoItem newTodoItem = TodoItem(description: value, id: uuid.v4());
+                  TodoItem newTodoItem = TodoItem(description: value);
                   BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
                   // Clear textfield

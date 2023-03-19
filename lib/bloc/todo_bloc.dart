@@ -66,7 +66,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       // If the element is found, we create a copy of the element with the `completed` field toggled.
       if (indexToChange != -1) {
         TodoItem itemToChange = items[indexToChange];
-        TodoItem updatedItem = TodoItem(description: itemToChange.description, id: itemToChange.id, completed: !itemToChange.completed);
+        TodoItem updatedItem = TodoItem(description: itemToChange.description, completed: !itemToChange.completed);
 
         items[indexToChange] = updatedItem;
       }

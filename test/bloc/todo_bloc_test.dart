@@ -6,8 +6,8 @@ import 'package:todo/todo.dart';
 void main() {
   group('TodoBloc', () {
     // List of items to mock
-    List<TodoItem> mockItems = [TodoItem(description: "todo description", id: "id-0")];
-    TodoItem newTodoItem = TodoItem(description: "todo description", id: "id-1");
+    List<TodoItem> mockItems = [TodoItem(description: "todo description")];
+    TodoItem newTodoItem = TodoItem(description: "todo description");
 
     blocTest(
       'emits [] when nothing is added',
@@ -31,7 +31,7 @@ void main() {
       'emits [TodoListLoadedState] when RemoveTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        TodoItem newTodoItem = TodoItem(description: "todo description", id: "id-1");
+        TodoItem newTodoItem = TodoItem(description: "todo description");
         bloc
           ..add(AddTodoEvent(newTodoItem))
           ..add(RemoveTodoEvent(newTodoItem)); // add and remove
@@ -43,7 +43,7 @@ void main() {
       'emits [TodoListLoadedState] when ToggleTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        TodoItem newTodoItem = TodoItem(description: "todo description", id: "id-1");
+        TodoItem newTodoItem = TodoItem(description: "todo description");
         bloc
           ..add(AddTodoEvent(newTodoItem))
           ..add(ToggleTodoEvent(newTodoItem));
