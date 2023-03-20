@@ -81,7 +81,7 @@ void main() {
     expect(checkboxWidget.icon, Icons.task_alt);
   });
 
-    testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
+  testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
     await tester.pumpWidget(const MainApp());
     await tester.pumpAndSettle();
 

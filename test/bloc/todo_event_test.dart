@@ -5,7 +5,7 @@ import 'package:todo/todo.dart';
 
 void main() {
   group('TodoEvent', () {
-    group('AddTodoEvent', () {
+    group('TodoListStarted', () {
       test('supports value comparison', () {
         expect(TodoListStarted(), TodoListStarted());
       });
