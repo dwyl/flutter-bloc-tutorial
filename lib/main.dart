@@ -26,12 +26,14 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TodoBloc()..add(TodoListStarted()),
-      child: HomePage(),
+      child: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -66,12 +68,14 @@ class _HomePageState extends State<HomePage> {
                   labelText: 'What do we need to do?',
                 ),
                 onSubmitted: (value) {
-                  // Create new item and create AddTodo event
-                  TodoItem newTodoItem = TodoItem(description: value);
-                  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+                  if(value.isNotEmpty) {
+                    // Create new item and create AddTodo event
+                    TodoItem newTodoItem = TodoItem(description: value);
+                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
-                  // Clear textfield
-                  txtFieldController.clear();
+                    // Clear textfield
+                    txtFieldController.clear();
+                  }
                 },
               ),
 

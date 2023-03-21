@@ -3,7 +3,7 @@
 class StopwatchEx {
   final Stopwatch _stopWatch = Stopwatch();
 
-  Duration _initialOffset;
+  final Duration _initialOffset;
 
   StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
 

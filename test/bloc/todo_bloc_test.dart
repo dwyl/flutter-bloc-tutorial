@@ -6,7 +6,6 @@ import 'package:todo/todo.dart';
 void main() {
   group('TodoBloc', () {
     // List of items to mock
-    List<TodoItem> mockItems = [TodoItem(description: "todo description")];
     TodoItem newTodoItem = TodoItem(description: "todo description");
 
     blocTest(
