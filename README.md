@@ -1,6 +1,9 @@
 <div align="center">
 
-![bloc-logo](https://user-images.githubusercontent.com/17494745/223100913-13fdb2de-cfd5-4450-9b65-77ac10893d4e.png)
+<p align='center'>
+    <img width="250" alt="bloc-logo" src="https://user-images.githubusercontent.com/17494745/223100913-13fdb2de-cfd5-4450-9b65-77ac10893d4e.png">
+</p>
+
 
 
 Learn
@@ -71,18 +74,18 @@ first to learn the basics.
 After that, 
 we *highly recommend* you
 follow [`dwyl/flutter-todo-list-tutorial`](https://github.com/dwyl/flutter-todo-list-tutorial).
-You will find great value in it,
+You will find great value in it
 to guide you through implementing an app
 with shared state *without* `Bloc`.
 
 # Why? 👀
 
 If you've worked with `Flutter`,
-you probably came across **stateful widgets**.
+you've probably came across **stateful widgets**.
 In these widgets, the state and
 how/when it changes determines how many times
 the widget is rendered.
-The state that is contained in the widget
+The state that is contained within the widget
 is referred to as "local state".
 
 A `Flutter` app consists of 
@@ -119,8 +122,8 @@ and do the heavy lifting for you.
 Examples include
 [Riverpod](https://riverpod.dev/),
 [Provider](https://pub.dev/packages/provider)
-and [**Bloc**](https://bloclibrary.dev/#/),
-where the latter will be the focus of this tutorial.
+and [**Bloc**](https://bloclibrary.dev/#/).
+The latter will be the focus of this tutorial.
 
 # What? 🤷‍♂️
 
@@ -146,7 +149,7 @@ stating there is no internet connection.
 There are a few benefits for using `Bloc`:
 - the logic is *kept out of the widgets*.
 - it's easy to test logic and widgets separately.
-"When my state ix X, widgets should be Y".
+"When my state is X, widgets should be Y".
 - we can *trace person interactions*
 made in widgets through **blocs** 
 (we will talk about this in the next section).
@@ -191,7 +194,7 @@ a "done" event is thrown.
 
 ### [Bloc](https://bloclibrary.dev/#/coreconcepts?id=bloc)
 
-Let's start with the most "difficult" one.
+Let's start with the most "difficult" concept.
 Quoting `Bloc`'s docs:
 
 > A `Bloc` is a more advanced class 
@@ -239,9 +242,9 @@ Check the following diagram.
 
 > credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
 
-In `Cubit`, 
+`Cubits`, 
 although similar,
-differ from `Bloc` because
+differ from `Blocs` because
 **they don't have events**.
 The `Cubit` has *methods*,
 there is no need to pass instances of `events`
@@ -270,7 +273,7 @@ If your team is struggling to model event transitions,
 you might want to start with `Cubits`.
 
 However, if you value traceability 
-or are havinga  hard time mocking cubits for widget tests,
+or are having a hard time mocking cubits for widget tests,
 you might want to use `Blocs`.
 
 If you're unsure of the event-driven approach,
@@ -343,7 +346,7 @@ which is what is done in the constructor.
 When defining **`Bloc Events`**,
 we should follow some guidelines.
 
-- have a "root"/base calss for event (`PetEvent`).
+- have a "root"/base class for event (`PetEvent`).
 - use [`Equatable`](https://pub.dev/packages/equatable),
 a library that allows us to make better equality comparisons 
 between class instances.
@@ -546,7 +549,8 @@ in https://github.com/dwyl/learn-flutter#install-%EF%B8%8F.
 
 ## 0. Create a new `Flutter` project
 
-If you want to create a new project,
+We need to create a brand new `Flutter` project.
+If you don't know how to do this,
 we have created a small guide for you 
 in https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
 
@@ -626,7 +630,7 @@ to have at least three functions:
 one to *start the timer*,
 another to *stop the timer*
 and another to get 
-*the total person duration*
+*the total timers duration*
 to display to the person 
 how much time has elapsed.
 
@@ -736,7 +740,7 @@ uuid: ^3.0.6
 ```
 
 And run `flutter pub get`.
-This wil install the dependency.
+This will install the dependency.
 
 After this, 
 create a file in `lib/todo.dart`
@@ -873,14 +877,15 @@ We want each todo item to have
 can *start* and *stop*. 
 Each todo item
 **will have a list of `timers`**,
-each one with a start and stop datetime property.
+each one with a start and stop `DateTime` property.
 To get the cumulative duration,
 we simply iterate over the list 
 of `timers` and get the duration of each one
 and sum them all up!
 
-We want to *show to the person*
-the current time 
+However, 
+we want to *show to the person*
+the current ongoing time 
 and if the `timer` is ongoing or not.
 
 For this,
@@ -909,7 +914,7 @@ and paste the following code.
 class StopwatchEx {
   final Stopwatch _stopWatch = Stopwatch();
 
-  Duration _initialOffset;
+  final Duration _initialOffset;
 
   StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
 
@@ -958,7 +963,7 @@ and *then* implement them!
 ### 2.1 Adding widget tests
 
 These will be the widget tests
-that are relevent for UX.
+that are relevant for UX.
 We are going to be testing the following constraints:
 
 - when loading the app, 
@@ -1460,7 +1465,6 @@ import 'package:todo/todo.dart';
 void main() {
   group('TodoBloc', () {
     // List of items to mock
-    List<TodoItem> mockItems = [TodoItem(description: "todo description")];
     TodoItem newTodoItem = TodoItem(description: "todo description");
 
     blocTest(
@@ -1575,7 +1579,7 @@ class TodoListErrorState extends TodoState {
 ```
 
 We are simply creating a class pertaining 
-to each possibl state we've mentioned earlier.
+to each possible state we've mentioned earlier.
 Since we are extending `Equatable` 
 to avoid any errors when comparing classes 
 and avoid duplicate events being thrown,
@@ -1754,7 +1758,7 @@ For more information,
 check the following link:
 https://stackoverflow.com/questions/65379743/flutter-bloc-cant-update-my-list-of-boolean.
 
-You might have noticed the following snippet of code
+You might have *also* noticed the following snippet of code
 in some of the event handlers.
 
 ```dart
@@ -1843,12 +1847,14 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TodoBloc()..add(TodoListStarted()),
-      child: HomePage(),
+      child: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -1990,12 +1996,14 @@ Don't worry, we'll break it down what we've changed!
                   labelText: 'What do we need to do?',
                 ),
                 onSubmitted: (value) {
-                  // Create new item and create AddTodo event
-                  TodoItem newTodoItem = TodoItem(description: value);
-                  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+                  if(value.isNotEmpty) {
+                    // Create new item and create AddTodo event
+                    TodoItem newTodoItem = TodoItem(description: value);
+                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
-                  // Clear textfield
-                  txtFieldController.clear();
+                    // Clear textfield
+                    txtFieldController.clear();
+                  }
                 },
               ),
 
@@ -2079,7 +2087,7 @@ onSubmitted: (value) {
 },
 ```
 
-When the user submits the text,
+When the person submits the text,
 an `AddTodoEvent` is created with the new text.
 This is handled in `TodoBloc`, 
 as we've shown prior.
@@ -2104,7 +2112,7 @@ to the `ItemCard` widget!
 
 As it stands,
 the app is not really useful.
-Our users need to be able to toggle 
+People need to be able to toggle 
 each `ItemCard` and start/stop timers.
 Let's address both of these concerns! 🎉
 
@@ -2327,11 +2335,30 @@ trailing: Wrap(
 We are *leveraging* the `_stopwatch` variable
 to show either a "Start" or "Stop" button.
 Additionally, we call the `elapsedMilliseconds()`
-function and show it to the user.
+function and show it to the person.
 This value is properly shown because the widget is rendered
 every 200ms, as stated previously.
 
-The `handleButtonClick()` is called
+We are using a `formatTime()` function.
+We have used the code from this answer from StackOverflow -> 
+https://stackoverflow.com/a/56458586/20281592.
+Create a file in `lib` called `utils.dart`
+and paste the following code from it.
+
+```dart
+String formatTime(int milliseconds) {
+  var secs = milliseconds ~/ 1000;
+  var hours = (secs ~/ 3600).toString().padLeft(2, '0');
+  var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
+  var seconds = (secs % 60).toString().padLeft(2, '0');
+  return "$hours:$minutes:$seconds";
+}
+```
+
+This will format the code properly to be shown to the person.
+
+Moving on,
+the `handleButtonClick()` is called
 every time the button is pressed.
 In this function,
 depending on whether the timer is running or not,
