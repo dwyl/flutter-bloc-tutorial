@@ -37,8 +37,28 @@ Use these links to skip straight to the section that interests you:
     - [`BlocConsumer`](#blocconsumer)
 - [How? 💻](#how-)
   - [Before You Start! 💡](#before-you-start-)
-  - [0. Create a new `Flutter`project](#0-create-a-new-flutterproject)
-  - [test](#test)
+  - [0. Create a new `Flutter` project](#0-create-a-new-flutter-project)
+  - [1. `Stopwatch` and `TodoItem` classes](#1-stopwatch-and-todoitem-classes)
+    - [1.1 `TodoItem` class](#11-todoitem-class)
+    - [1.2 `Stopwatch` class](#12-stopwatch-class)
+  - [2. Basic app layout](#2-basic-app-layout)
+    - [2.1 Adding widget tests](#21-adding-widget-tests)
+    - [2.2 Creating widgets](#22-creating-widgets)
+  - [3. Adding `Bloc` to our project](#3-adding-bloc-to-our-project)
+    - [3.1 Adding `Bloc` tests](#31-adding-bloc-tests)
+    - [3.2 Adding `bloc` to our app](#32-adding-bloc-to-our-app)
+      - [3.2.1 `Bloc` states](#321-bloc-states)
+      - [3.2.2 `Bloc` events](#322-bloc-events)
+      - [3.2.3 Creating the `bloc`](#323-creating-the-bloc)
+      - [3.2.4 Run the tests!](#324-run-the-tests)
+  - [4. Changing widgets to listen to state changes](#4-changing-widgets-to-listen-to-state-changes)
+    - [4.1 Providing our `TodoBloc` to the whole app](#41-providing-our-todobloc-to-the-whole-app)
+    - [4.2 Creating and listing `TodoItem` widgets](#42-creating-and-listing-todoitem-widgets)
+    - [4.3 Toggling and start/stopping timers in `ItemCard`](#43-toggling-and-startstopping-timers-in-itemcard)
+      - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
+      - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
+  - [5. Run the app!](#5-run-the-app)
+- [I need help! ❓](#i-need-help-)
 
 
 # A note 🗒️
@@ -127,7 +147,7 @@ There are a few benefits for using `Bloc`:
 - the logic is *kept out of the widgets*.
 - it's easy to test logic and widgets separately.
 "When my state ix X, widgets should be Y".
-- we can *trace user interactions*
+- we can *trace person interactions*
 made in widgets through **blocs** 
 (we will talk about this in the next section).
 
@@ -215,7 +235,7 @@ to trigger state changes.
 
 Check the following diagram.
 
-<img width="1127" alt="cubit-diagarm" src="https://user-images.githubusercontent.com/17494745/223120206-dee22295-94f4-472a-803d-45ca9f3cab45.png">
+<img width="1127" alt="cubit-diagram" src="https://user-images.githubusercontent.com/17494745/223120206-dee22295-94f4-472a-803d-45ca9f3cab45.png">
 
 > credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
 
@@ -275,7 +295,7 @@ let's see how these could be implemented in Flutter.
 To create a `bloc` in Flutter,
 we need to:
 - provide an initial state.
-- set up event listeneders and handlers.
+- set up event listeners and handlers.
 - add events to `bloc` via `bloc.add`.
 
 Check the following piece of code.
@@ -507,7 +527,7 @@ We are going to be building
 a Todo list app, 
 where each todo item has a timer.
 
-The user should be able 
+The person should be able 
 to set the item 
 as *done*
 and start/stop the item pertaining
@@ -524,7 +544,7 @@ and the needed dependencies,
 follow our guide in `dwyl/learn-flutter`
 in https://github.com/dwyl/learn-flutter#install-%EF%B8%8F.
 
-## 0. Create a new `Flutter`project
+## 0. Create a new `Flutter` project
 
 If you want to create a new project,
 we have created a small guide for you 
@@ -561,23 +581,1817 @@ If you run the application,
 you will see the following screen.
 
 <p align='center'>
-    <img width="250" alt="cubit-diagarm" src="https://user-images.githubusercontent.com/17494745/223190180-c47dc5fa-b237-47c7-95f9-b28278021a3f.png">
+    <img width="250" alt="cubit-diagram" src="https://user-images.githubusercontent.com/17494745/223190180-c47dc5fa-b237-47c7-95f9-b28278021a3f.png">
 </p>
 
 > **Note**
 >
 > If you are having trouble 
-> debugging the `Flutter` project...
+> debugging the `Flutter` project, 
+> check the following links:
 > 
-> To run on a real device, 
+> - to run on a **real device**, 
 > check https://github.com/dwyl/flutter-stopwatch-tutorial#running-on-a-real-device.
 > 
-> To run on a simulator, check https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
+> - to run on a **emulator**, visit https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
 
 
 Now we are ready 
 to start to implement our project
 with `Bloc`!
 
-## test
+## 1. `Stopwatch` and `TodoItem` classes
 
+Before starting to implement any widgets,
+there are two classes that 
+are going to be needed 
+to fulfil our app requirements.
+
+Let's start with our `TodoItem` class.
+
+### 1.1 `TodoItem` class 
+
+The `TodoItem` class
+will hold all the information pertaining to the person.
+We know that the class will have:
+- a **description**.
+- a **boolean property** so we know it's completed or not.
+- an **id**.
+- a list of **`timers`**, 
+where each `timer` pertains to a
+*start* and *stop* operation.
+
+We are expecting this class
+to have at least three functions:
+one to *start the timer*,
+another to *stop the timer*
+and another to get 
+*the total person duration*
+to display to the person 
+how much time has elapsed.
+
+Let's start by writing our tests.
+Create a directory and file 
+with the path `test/unit/todo_test.dart`,
+and write the next two tests in it.
+
+```dart
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo/todo.dart';
+
+void main() {
+  test('Cumulative duration after starting and stopping timer should be more than 0', () {
+    const description = "description";
+
+    final todoItem = TodoItem(description: description);
+
+    // Checking attributes
+    expect(todoItem.description, description);
+
+    // Start and stop timer
+    todoItem.startTimer();
+    sleep(const Duration(milliseconds: 500));
+    todoItem.stopTimer();
+
+    // Start and stop timer another time
+    todoItem.startTimer();
+    sleep(const Duration(milliseconds: 500));
+    todoItem.stopTimer();
+
+    // Some time must have passed
+    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+  });
+
+  test('Start timer multiple times and stopping timer will not error out', () {
+    const description = "description";
+
+    final todoItem = TodoItem(description: description);
+
+    // Checking attributes
+    expect(todoItem.description, description);
+
+    // Start timers three times
+    todoItem.startTimer();
+    todoItem.startTimer();
+    todoItem.startTimer();
+
+    // Stop timer after half a second
+    sleep(const Duration(milliseconds: 500));
+    todoItem.stopTimer();
+
+    // Some time must have passed
+    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+  });
+}
+```
+
+We are creating two tests scenarios.
+
+In the first, 
+we create a `TodoItem`
+with a specific `description` and `id`.
+We check if these properties
+exist within the class instance.
+We then start the timer,
+wait for half a second
+and stop it.
+We do this operation two times,
+and finally check if the *cumulative duration*
+yielded by the class is not 0.
+
+In the second one,
+we check if the person can 
+accidentally call `startTimer()`
+multiple times.
+The class should be able to handle this edge case.
+
+If we run `flutter test`,
+the tests will obviously fail,
+as we didn't yet implement this class.
+Let's do that right now!
+
+Firstly,
+we need a way to create `id`s
+on the go.
+Usually you'd associate the `id` 
+of a `TodoItem` class
+with the `id` from the database.
+However, 
+since we are doing everything locally,
+we will use the 
+[`uuid` package](https://pub.dev/packages/uuid)
+to generate random 
+[uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+every time a class is instantiated. 
+
+To install this package,
+add the following line to the 
+`dependencies` section 
+in `pubspec.yaml`.
+
+```yaml
+uuid: ^3.0.6
+```
+
+And run `flutter pub get`.
+This wil install the dependency.
+
+After this, 
+create a file in `lib/todo.dart`
+and paste the following contents.
+
+```dart
+import 'package:uuid/uuid.dart';
+
+// Uuid to generate Ids for the todos
+Uuid uuid = const Uuid();
+
+/// Todo class.
+/// Each `Todo` has an `id`, `description` and `completed` boolean field.
+class TodoItem {
+  final String id = uuid.v4();
+  final String description;
+  final bool completed;
+  final List<ItemTimer> _timersList = [];
+
+  TodoItem({
+    required this.description,
+    this.completed = false,
+  });
+
+  // Adds a new timer that starts on current time
+  startTimer() {
+    if (_timersList.isEmpty) {
+      _timersList.add(ItemTimer(null, start: DateTime.now()));
+    } else {
+      ItemTimer lastTimer = _timersList.last;
+
+      // Only create a new timer if the last one is finished
+      if (lastTimer.end != null) {
+        _timersList.add(ItemTimer(null, start: DateTime.now()));
+      }
+    }
+  }
+
+  // Stop the timer that is at the end of the list
+  stopTimer() {
+    if (_timersList.isNotEmpty) {
+      ItemTimer lastTimer = _timersList.last;
+
+      // Only stop last timer if the end is null
+      if (lastTimer.end == null) {
+        lastTimer.end = DateTime.now();
+        _timersList[_timersList.length - 1] = lastTimer;
+      }
+    }
+  }
+
+  getCumulativeDuration() {
+    if (_timersList.isEmpty) return Duration.zero;
+
+    // Accumulate the duration of every timer
+    Duration accumulativeDuration = const Duration();
+    for (ItemTimer timer in _timersList) {
+      final stop = timer.end;
+      if (stop != null) {
+        accumulativeDuration += stop.difference(timer.start);
+      }
+    }
+
+    return accumulativeDuration;
+  }
+}
+
+// Timer class
+class ItemTimer {
+  final DateTime start;
+  DateTime? end;
+
+  ItemTimer(this.end, {required this.start});
+}
+```
+
+Let's break this down!
+In our `TodoItem` class 
+we have the four properties 
+we've aforementioned. 
+When instantiating this class,
+we use the `uuid` package
+to create the `id`.
+
+In the `startTimer()` function,
+we create add a new timer to the 
+`_timersList` timer list only if:
+- the list is empty.
+- the last `timer` in the list
+is **not** ongoing.
+
+In the `stopTimer()` function,
+we *alter* the last timer 
+in the `_timersList` array
+only if:
+- the last `timer` object
+in the list is ongoing.
+- the list is *not* empty.
+
+To get the cumulative duration
+of all the timers,
+we create the `getCumulativeDuration()` function,
+which iterates over the array
+and gets the duration of each `timer` object.
+
+The `timer` object is simply a
+`ItemTimer` class that has two properties:
+a `start` and `end` 
+[`DateTime`](https://api.dart.dev/stable/2.19.4/dart-core/DateTime-class.html).
+This class is defined at the end of the file.
+
+And that's it!
+If we execute the tests we've implemented
+by running `flutter test`,
+we will see the following output from the terminal.
+
+```sh
+00:02 +2 -4: Some tests failed. 
+```
+
+Awesome! 
+This means the test pass!
+We have four failing tests,
+all pertaining to the `widget_test.dart` file.
+This is normal, as we haven't had the opportunity to implement these features.
+We will do that later!
+
+### 1.2 `Stopwatch` class
+
+Now let's focus on the `Stopwatch` class.
+
+We want each todo item to have
+**timers** that the person 
+can *start* and *stop*. 
+Each todo item
+**will have a list of `timers`**,
+each one with a start and stop datetime property.
+To get the cumulative duration,
+we simply iterate over the list 
+of `timers` and get the duration of each one
+and sum them all up!
+
+We want to *show to the person*
+the current time 
+and if the `timer` is ongoing or not.
+
+For this,
+we *can* use the [`Stopwatch`](https://api.flutter.dev/flutter/dart-core/Stopwatch-class.html)
+class provided by `Flutter` 
+for this.
+However, 
+this Dart SDK class is too simple for what we want.
+We want the stopwatch to be able 
+to start from an initial offset
+so we can compound the duration of each timer properly.
+This is *not possible* with the base class.
+
+With this in mind,
+we need to *extend* this class to have this capability.
+We are going to be using a simplified version
+of the `Stopwatch` extension class 
+that was implemented in 
+[`dwyl/flutter-stopwatch-tutorial`](https://github.com/dwyl/flutter-stopwatch-tutorial#persisting-between-sessions-and-extending-stopwatch-capabilities).
+
+Create the file
+`lib/stopwatch.dart`
+and paste the following code.
+
+```dart
+class StopwatchEx {
+  final Stopwatch _stopWatch = Stopwatch();
+
+  Duration _initialOffset;
+
+  StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
+
+  start() => _stopWatch.start();
+
+  stop() => _stopWatch.stop();
+
+  bool get isRunning => _stopWatch.isRunning;
+
+  int get elapsedMilliseconds => _stopWatch.elapsedMilliseconds + _initialOffset.inMilliseconds;
+}
+```
+
+As you can see,
+the `Stopwatch` class is wrapped
+in our `StopwatchEx`.
+It basically allows us to have an 
+initial offset on the `stopwatch` object.
+This will make it possible to 
+*properly print the stopwatch time while it's running*
+and not have it reset every time the person
+starts and stops the timer.
+
+
+## 2. Basic app layout
+
+Now that we have everything we need,
+let's start building our app!
+
+We should first start with the basic layout.
+We will need at least three things:
+
+- a way for the person to create a new todo item.
+- a text stating how many items are left.
+- a list of *todo items that can be toggled*
+and have a way to *create and stop timers* within them.
+
+To build this layout, 
+we will be using a 
+[**TDD**](https://github.com/dwyl/learn-tdd)
+approach.
+Let's write the tests first
+on what we expect the widgets to do
+and *then* implement them!
+
+### 2.1 Adding widget tests
+
+These will be the widget tests
+that are relevent for UX.
+We are going to be testing the following constraints:
+
+- when loading the app, 
+the person should be shown a 
+[`Textfield`](https://api.flutter.dev/flutter/material/TextField-class.html)
+to create a new todo item
+and a 
+[`Text`](https://docs.flutter.dev/development/ui/widgets/text)
+to show how many incomplete todo items are left.
+- when the person inputs the text
+and presses `Done` on the keyboard,
+a new `TodoItem` widget should be shown.
+- when the person clicks on the 
+`TodoItem` widget,
+it should toggle between a
+"completed" or "not completed" state.
+- each `TodoItem` widget should have a 
+`Timer` [`Button`](https://api.flutter.dev/flutter/material/ElevatedButton-class.html)
+that can be pressed
+to start/stop the timer.
+- the current time spent on each `TodoItem`
+should be shown below the button
+and start when the person presses the "Start" button
+and stop when the person presses the "Stop" button.
+
+Let's create the tests!
+Don't worry, since the widgets don't exist,
+most of these tests won't even compile at first.
+We are going to be adding the widgets
+and [**keys**](https://api.flutter.dev/flutter/foundation/UniqueKey-class.html)
+on each one to be used in these tests.
+
+Create the file in the
+`test/widget/widget_test.dart` path
+and paste the following contents.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo/main.dart';
+
+void main() {
+  testWidgets('Build correctly setup and is loaded', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pump();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemsLeftStringKey), findsOneWidget);
+  });
+
+  testWidgets('Adding a new todo item shows a card', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemsLeftStringKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Type text into todo input
+    await tester.enterText(find.byKey(textfieldKey), 'new todo');
+    expect(
+        find.descendant(
+          of: find.byKey(textfieldKey),
+          matching: find.text('new todo'),
+        ),
+        findsOneWidget);
+
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+
+    // Input is cleared
+    expect(
+      find.descendant(
+        of: find.byKey(textfieldKey),
+        matching: find.text('new todo'),
+      ),
+      findsNothing,
+    );
+
+    // Pump the widget so it renders the new item
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Expect to find at least one widget, pertaining to the one that was added
+    expect(find.byKey(itemCardWidgetKey), findsOneWidget);
+  });
+
+  testWidgets('Adding a new todo item and checking it as done', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Type text into todo input
+    await tester.enterText(find.byKey(textfieldKey), 'new todo');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+
+    // Pump the widget so it renders the new item
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Expect to find at least one widget, pertaining to the one that was added
+    expect(find.byKey(itemCardWidgetKey), findsOneWidget);
+
+    // Getting widget to test its value
+    Finder checkboxFinder = find.descendant(of: find.byKey(itemCardWidgetKey), matching: find.byType(Icon));
+    Icon checkboxWidget = tester.firstWidget<Icon>(checkboxFinder);
+
+    expect(checkboxWidget.icon, Icons.radio_button_unchecked);
+
+    // Tap on item card
+    await tester.tap(find.byKey(itemCardWidgetKey));
+    await tester.pump(const Duration(seconds: 2));
+
+    // Updating item card widget and checkbox value should be true
+    checkboxWidget = tester.firstWidget<Icon>(checkboxFinder);
+    expect(checkboxWidget.icon, Icons.task_alt);
+  });
+
+    testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Type text into todo input
+    await tester.enterText(find.byKey(textfieldKey), 'new todo');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+
+    // Pump the widget so it renders the new item
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Expect to find at least one widget, pertaining to the one that was added
+    expect(find.byKey(itemCardWidgetKey), findsOneWidget);
+
+    // Getting widget to test its value
+    ElevatedButton buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
+
+    // Button should be stopped
+    expect(buttonWidget.child.toString(), const Text("Start").toString());
+
+    // Tap on timer button.
+    await tester.tap(find.byKey(itemCardTimerButtonKey));
+    await tester.pump(const Duration(seconds: 2));
+
+    // Updating widget and button should be ongoing
+    buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
+    expect(buttonWidget.child.toString(), const Text("Stop").toString());
+
+    // Tap on timer button AGAIN
+    await tester.tap(find.byKey(itemCardTimerButtonKey));
+    await tester.pump(const Duration(seconds: 2));
+
+    // Updating widget and button should be stopped
+    buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
+    expect(buttonWidget.child.toString(), const Text("Start").toString());
+  });
+}
+```
+
+Each test scenario refers
+to each bullet point that was stated above.
+The comments in each test scenario should be self explanatory.
+
+These tests make use of the *keys*
+pertaining to each widget.
+
+- `textfieldKey` pertains to the
+`Textfield` input where the person types 
+the text to create a new todo item.
+- `itemsLeftStringKey` pertains to the 
+`Text` string that shows how many items are 
+still to be completed.
+- `itemCardWidgetKey` pertains
+to the todo item card widget.
+- `itemCardTimerButtonKey` pertains
+to the timer button inside the todo item card widget.
+
+
+### 2.2 Creating widgets
+
+Now it's high time to start 
+changing the `lib/main.dart` file
+and create a basic layout for our application!
+
+Head over to `lib/main.dart`
+and change it so it looks like the following.
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MainApp());
+}
+
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+            body: ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      children: [
+        TextField(
+          decoration: const InputDecoration(
+            labelText: 'What do we need to do?',
+          ),
+          onSubmitted: (value) {
+            print("submit new todo:$value");
+          },
+        ),
+        const SizedBox(height: 42),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 16.0),
+          child: Text('X items left', style: TextStyle(fontSize: 20)),
+        ),
+        const TodoItem(),
+        const TodoItem(),
+      ],
+    )));
+  }
+}
+
+class TodoItem extends StatelessWidget {
+  const TodoItem({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      elevation: 6,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 70),
+        child: ListTile(
+          onTap: () {
+            print('tapped');
+          },
+          leading: const Icon(
+            Icons.task_alt,
+            color: Colors.blue,
+            size: 18.0,
+          ),
+          trailing: Wrap(
+            children: [
+              Column(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      elevation: 0,
+                    ),
+                    onPressed: () {},
+                    child: const Text("Start"),
+                  ),
+                  const Text("00:00:00", style: TextStyle(fontSize: 11))
+                ],
+              )
+            ],
+          ),
+          title: const Text("sometext"),
+        ),
+      ),
+    );
+  }
+}
+```
+
+As you can see, we've made a few changes.
+
+The `MainApp` stateful widget 
+consists of three main elements:
+
+- the `Textfield` where the person will input text
+and create a new todo item.
+- a `Text` with the string `"X items left"`.
+- a list of `TodoItem` widgets.
+
+Each `TodoItem` widget
+is a stateless widget 
+that uses the 
+[`Material`](https://api.flutter.dev/flutter/material/Material-class.html)
+class as the root
+and has the icon showing whether the todo item is completed,
+the timer button that can be pressed
+and the description of the todo item.
+
+If you run the app,
+it should look like this.
+
+<p align='center'>
+    <img width="250" alt="basic-layout" src="https://user-images.githubusercontent.com/17494745/226194954-29b68e1c-bf7b-4971-88d5-43295aecc24a.png">
+</p>
+
+As you can see,
+the app is *non-functional*.
+If we click on any buttons,
+todo items
+or even try to input text
+and press "Done" on the keyboard,
+nothing happens.
+
+To make this app *work*,
+we're going to be using `Bloc`
+to manage the state of the app.
+
+Let's go! 🏃‍♂️
+
+ 
+## 3. Adding `Bloc` to our project
+
+We are going to be adding two dependencies to this project:
+
+- [`flutter_bloc`](https://pub.dev/packages/flutter_bloc), 
+for app state management.
+- [`equatable`](https://pub.dev/packages/equatable),
+to reduce class comparison boilerplate.
+
+> **Note**
+>
+> If you are interested in learning *why* `equatable`
+> is useful when paired with `bloc`,
+> check https://stackoverflow.com/questions/64316700/using-equatable-class-with-flutter-bloc.
+
+Add the following two lines 
+to the `dependencies` section
+in the `pubspec.yaml` file.
+
+```yaml
+  flutter_bloc: ^8.0.0
+  equatable: ^2.0.0
+```
+
+And then run `flutter pub get` 
+to install these newly added dependencies.
+
+Awesome!
+Now we are ready to setup the basic
+`bloc` components in our `Flutter` app!
+
+
+### 3.1 Adding `Bloc` tests
+
+We've explained the main concepts
+of `Bloc` in 
+[`BLoC` concepts in Flutter 🦋](#bloc-concepts-in-flutter-).
+We recommend reading through that
+*first* so you have a better understanding 
+of what we are going to implement now.
+
+Firstly, 
+we are going to be writing the tests
+for the three `bloc` components we're implementing.
+
+- the `bloc` itself.
+- `bloc` events.
+- `bloc` states.
+
+Create a directory inside `test` 
+called `bloc`
+and add a file called `test/bloc/todo_state_test.dart`.
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo/bloc/todo_bloc.dart';
+
+void main() {
+  group('TodoState', () {
+    group('TodoInitialState', () {
+      test('supports value comparison', () {
+        expect(TodoInitialState(), TodoInitialState());
+      });
+    });
+
+    group('TodoListLoadedState', () {
+      test('supports value comparison', () {
+        expect(const TodoListLoadedState(), const TodoListLoadedState());
+      });
+    });
+
+    group('TodoListErrorState', () {
+      test('supports value comparison', () {
+        expect(TodoListErrorState(), TodoListErrorState());
+      });
+    });
+  });
+}
+```
+
+Our `Bloc` instance in the app
+will essentially have three states:
+- the `TodoInitialState`, 
+which refers to the initial state of the app when it loads.
+- the `TodoListLoadedState`, 
+when the list is correctly loaded.
+This makes sense if our app would have to retrieve data
+from an API.
+Since we'll be doing everything locally,
+our app will always achieve this state successfully.
+- the `TodoListErrorState`,
+in case the list is not correctly loaded.
+This will never occur in our case, 
+as our app deals with todo items locally.
+However, if you were to fetch the todo items
+from an API and get an error,
+this state would prop up instead 
+of `TodoListLoadedState`.
+
+Great!
+In the same directory, 
+create a file called `todo_event_test.dart` 
+inside `test/bloc/`
+and paste the following piece of code.
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo/bloc/todo_bloc.dart';
+import 'package:todo/todo.dart';
+
+
+void main() {
+  group('TodoEvent', () {
+    group('TodoListStarted', () {
+      test('supports value comparison', () {
+        expect(TodoListStarted(), TodoListStarted());
+      });
+    });
+
+    group('AddTodoEvent', () {
+      final item = TodoItem(description: "description");
+      test('supports value comparison', () {
+        expect(AddTodoEvent(item), AddTodoEvent(item));
+      });
+    });
+
+    group('RemoveTodoEvent', () {
+      final item = TodoItem(description: "description");
+      test('supports value comparison', () {
+        expect(RemoveTodoEvent(item), RemoveTodoEvent(item));
+      });
+    });
+
+    group('ToggleTodoEvent', () {
+      final item = TodoItem(description: "description");
+      test('supports value comparison', () {
+        expect(ToggleTodoEvent(item), ToggleTodoEvent(item));
+      });
+    });
+  });
+}
+```
+
+> **Note**
+>
+> The reason we are importing `'package:todo/bloc/todo_bloc.dart'`
+> and not `'package:todo/bloc/todo_event.dart'` is because
+> the latter will be [`part of`](https://dart.dev/guides/language/effective-dart/usage#do-use-strings-in-part-of-directives)
+> the `todo_bloc.dart` file.
+>
+> Both `todo_bloc.dart` and `todo_event.dart` don't exist yet
+> because we're doing TDD but will soon enough!
+
+In this file we are testing **`Bloc` events**.
+In our application, we will have four possible events:
+
+- `TodoListStarted`,
+which is created when the todo list is initialized. 
+- `AddTodoEvent`,
+which is created whenever a person creates a todo item.
+- `RemoveTodoEvent`,
+which is created whenever a person wants to delete an item
+(we won't be using this event but it's good to show how it can be used).
+- `ToggleTodoEvent`,
+which is created whenever a todo item is toggled
+between "done" and "not done".
+
+We're almost done!
+The last (and arguably the most important) test file
+we'll create will pertain to the **`bloc` definition**.
+For this, 
+create a file called `todo_bloc_test.dart` 
+inside `test/bloc/` and add the code:
+
+```dart
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo/bloc/todo_bloc.dart';
+import 'package:todo/todo.dart';
+
+void main() {
+  group('TodoBloc', () {
+    // List of items to mock
+    List<TodoItem> mockItems = [TodoItem(description: "todo description")];
+    TodoItem newTodoItem = TodoItem(description: "todo description");
+
+    blocTest(
+      'emits [] when nothing is added',
+      build: () => TodoBloc(),
+      expect: () => [],
+    );
+
+    blocTest(
+      'emits [TodoListLoadedState] when AddTodoEvent is created',
+      build: () => TodoBloc()..add(TodoListStarted()),
+      act: (bloc) {
+        bloc.add(AddTodoEvent(newTodoItem));
+      },
+      expect: () => <TodoState>[
+        const TodoListLoadedState(items: []), // when the todo bloc was loaded
+        TodoListLoadedState(items: [newTodoItem]) // when the todo bloc was added an event
+      ],
+    );
+
+    blocTest(
+      'emits [TodoListLoadedState] when RemoveTodoEvent is created',
+      build: () => TodoBloc()..add(TodoListStarted()),
+      act: (bloc) {
+        TodoItem newTodoItem = TodoItem(description: "todo description");
+        bloc
+          ..add(AddTodoEvent(newTodoItem))
+          ..add(RemoveTodoEvent(newTodoItem)); // add and remove
+      },
+      expect: () => <TodoState>[const TodoListLoadedState(items: []), const TodoListLoadedState(items: [])],
+    );
+
+    blocTest(
+      'emits [TodoListLoadedState] when ToggleTodoEvent is created',
+      build: () => TodoBloc()..add(TodoListStarted()),
+      act: (bloc) {
+        TodoItem newTodoItem = TodoItem(description: "todo description");
+        bloc
+          ..add(AddTodoEvent(newTodoItem))
+          ..add(ToggleTodoEvent(newTodoItem));
+      },
+      expect: () => [
+        isA<TodoListLoadedState>(),
+        isA<TodoListLoadedState>().having((obj) => obj.items.first.completed, 'completed', false),
+        isA<TodoListLoadedState>().having((obj) => obj.items.first.completed, 'completed', true)
+      ],
+    );
+  });
+}
+```
+
+In this file we are testing
+the possible `bloc` mutations that will occur in the app.
+To test this behaviour,
+we are using the [`blocTest`](https://pub.dev/documentation/bloc_test/latest/bloc_test/blocTest.html)
+function to construct the `bloc` 
+(in the `build` parameter),
+creating events in the `act` parameter
+and checking the behaviour
+in the `expect` parameter.
+
+We are testing how the list of todo items
+inside the `TodoListLoadedState`
+changes when we add, remove and toggle todo items.
+
+> **Note**
+>
+> We are creating events against the `bloc`
+> using the `bloc.add()` method.
+
+
+### 3.2 Adding `bloc` to our app
+
+If we execute the tests we've coded,
+they will obviously fail because we haven't a `bloc` implemented.
+Let's do that now!
+
+#### 3.2.1 `Bloc` states
+
+In the `lib` directory, create a directory called `bloc`.
+Within this directory,
+create a file called `todo_state.dart`
+and paste the following code into it.
+
+```dart
+part of 'todo_bloc.dart';
+
+abstract class TodoState extends Equatable {
+  const TodoState();
+}
+
+
+// Initial TodoBloc state
+class TodoInitialState extends TodoState {
+  @override
+  List<Object> get props => [];
+}
+
+// TodoBloc state when the todo item list is loaded
+class TodoListLoadedState extends TodoState {
+  final List<TodoItem> items;
+  const TodoListLoadedState({this.items = const []});
+  @override
+  List<Object> get props => [items];
+}
+
+// TodoBloc state when a todo item errors when loading
+class TodoListErrorState extends TodoState {
+  @override
+  List<Object> get props => [];
+}
+```
+
+We are simply creating a class pertaining 
+to each possibl state we've mentioned earlier.
+Since we are extending `Equatable` 
+to avoid any errors when comparing classes 
+and avoid duplicate events being thrown,
+we have to *override* the `get` method.
+
+As you can see, 
+the `TodoListLoadedState`
+**has the todo items list as property**.
+This property will be changed throughout the lifecycle of the app
+*whenever an event is created* 
+(be it adding, removing or toggling an item).
+
+
+#### 3.2.2 `Bloc` events
+
+Inside the same `lib/bloc` directory, 
+create a file called `todo_event.dart`
+and use the following code.
+
+```dart
+part of 'todo_bloc.dart';
+
+abstract class TodoEvent extends Equatable {
+  const TodoEvent();
+}
+
+// Event to kick start the todo list event
+class TodoListStarted extends TodoEvent {
+  @override
+  List<Object> get props => [];
+}
+
+// AddTodo event when an item is added
+class AddTodoEvent extends TodoEvent {
+  final TodoItem todoObj;
+
+  const AddTodoEvent(this.todoObj);
+
+  @override
+  List<Object> get props => [todoObj];
+}
+
+// RemoveTodo event when an item is removed
+class RemoveTodoEvent extends TodoEvent {
+  final TodoItem todoObj;
+
+  const RemoveTodoEvent(this.todoObj);
+
+  @override
+  List<Object> get props => [todoObj];
+}
+
+// RemoveTodo event when an item is toggled
+class ToggleTodoEvent extends TodoEvent {
+  final TodoItem todoObj;
+
+  const ToggleTodoEvent(this.todoObj);
+
+  @override
+  List<Object> get props => [todoObj];
+}
+```
+
+Similarly to the **State** file,
+we are using `Equatable` when defining 
+the event classes and overriding the `get` method.
+
+We are creating a class for each possible event in the app.
+The event *carries information about the item*
+that is being edited/removed/added.
+
+
+#### 3.2.3 Creating the `bloc`
+
+Finally, 
+let's add the `bloc`
+to manage our list of todo items!
+
+In the same `lib/bloc` directory,
+add a file called `todo_bloc.dart`
+and use the code displayed next.
+
+```dart
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+import 'package:todo/todo.dart';
+
+part 'todo_event.dart';
+part 'todo_state.dart';
+
+
+class TodoBloc extends Bloc<TodoEvent, TodoState> {
+
+  TodoBloc() : super(TodoInitialState()) {
+    on<TodoListStarted>(_onStart);
+    on<AddTodoEvent>(_addTodo);
+    on<RemoveTodoEvent>(_removeTodo);
+    on<ToggleTodoEvent>(_toggleTodo);
+  }
+
+  _onStart(TodoListStarted event, Emitter<TodoState> emit) {
+    emit(const TodoListLoadedState(items: []));
+  }
+
+  // AddTodo event handler which emits TodoAdded state
+  _addTodo(AddTodoEvent event, Emitter<TodoState> emit) {
+    final state = this.state;
+
+    if (state is TodoListLoadedState) {
+      emit(TodoListLoadedState(items: [...state.items, event.todoObj]));
+    }
+  }
+
+  // RemoveTodo event handler which emits TodoDeleted state
+  _removeTodo(RemoveTodoEvent event, Emitter<TodoState> emit) {
+    final state = this.state;
+
+    if (state is TodoListLoadedState) {
+      List<TodoItem> items = state.items;
+      items.removeWhere((element) => element.id == event.todoObj.id);
+
+      emit(TodoListLoadedState(items: items));
+    }
+  }
+
+  _toggleTodo(ToggleTodoEvent event, Emitter<TodoState> emit) {
+    final state = this.state;
+
+    if (state is TodoListLoadedState) {
+
+      List<TodoItem> items = List.from(state.items);
+      int indexToChange = items.indexWhere((element) => element.id == event.todoObj.id);
+
+      // If the element is found, we create a copy of the element with the `completed` field toggled.
+      if (indexToChange != -1) {
+        TodoItem itemToChange = items[indexToChange];
+        TodoItem updatedItem = TodoItem(description: itemToChange.description, completed: !itemToChange.completed);
+
+        items[indexToChange] = updatedItem;
+      }
+
+      emit(TodoListLoadedState(items: [...items]));
+    }
+  }
+}
+```
+
+We are defining our `TodoBloc` class
+by extending the 
+[`Bloc` class ](https://pub.dev/documentation/bloc/latest/bloc/Bloc-class.html).
+In the constructor, 
+we are defining every event handler.
+
+```dart
+  TodoBloc() : super(TodoInitialState()) {
+    on<TodoListStarted>(_onStart);
+    on<AddTodoEvent>(_addTodo);
+    on<RemoveTodoEvent>(_removeTodo);
+    on<ToggleTodoEvent>(_toggleTodo);
+  }
+```
+
+These event handlers emit **states**.
+In the UI, we will 
+[*listen to state changes*](https://bloclibrary.dev/#/coreconcepts?id=state-changes-1)
+and update the widgets accordingly.
+
+You might have noticed
+whenever we add/remove/toggle a todo item,
+we are **creating a new todo item list**.
+We need to create a new `List` object
+so widgets like `BlocBuilder` or `BlocListeners`
+*know* that the **state has changed**.
+For more information,
+check the following link:
+https://stackoverflow.com/questions/65379743/flutter-bloc-cant-update-my-list-of-boolean.
+
+You might have noticed the following snippet of code
+in some of the event handlers.
+
+```dart
+if (state is TodoListLoadedState)
+```
+
+Adding/removing/toggling todo items 
+*only make sense* **when the todo item list is loaded**.
+If the app is not in a correct state,
+we need to handle these events accordingly.
+In our case,
+we don't `emit()` any new states
+when the app is not on a correct state itself.
+
+#### 3.2.4 Run the tests!
+
+Now that we've defined 
+and set up `Bloc` in our app,
+we can run the tests
+to see if it behaves how we intend it to!
+
+In your terminal window,
+run `flutter test`.
+You should see the following output.
+
+```sh
+00:02 +13 -4: Some tests failed. 
+```
+
+Hurray! 🎉
+
+This means our everything works as intended!
+We are now *ready* to change our app
+to use `bloc`!
+It's high time we tackle those pesky failing tests!
+
+
+## 4. Changing widgets to listen to state changes
+
+Now it's time to change our widgets
+so they react ot state changes
+and finally add functionality to our app!
+
+Before making any changes,
+we need to create the keys for the widgets
+we've used in our tests.
+
+On top of the `lib/main.dart` file,
+right above the `main` function,
+add the following keys.
+
+```dart
+final textfieldKey = UniqueKey();
+final itemsLeftStringKey = UniqueKey();
+final itemCardWidgetKey = UniqueKey();
+final itemCardTimerButtonKey = UniqueKey();
+```
+
+### 4.1 Providing our `TodoBloc` to the whole app
+
+We first need to **provide `bloc` to our app**.
+For this, 
+we are going to be using the 
+[`BlocProvider`](https://pub.dev/documentation/flutter_bloc/latest/flutter_bloc/BlocProvider-class.html)
+function.
+
+We are going to be doing this
+in the root of our application.
+Locate the `MainApp` stateful widget.
+Let's **split it in two**:
+`MainApp` will be a *stateless widget*
+that will now have the `HomePage` *stateful widget*
+as a child.
+The code that is currently in the 
+`_MainAppState` will be in `HomePage` class.
+
+Change these two classes
+in `lib/main.dart`
+so they look like this:
+
+```dart
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TodoBloc()..add(TodoListStarted()),
+      child: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      ...
+    )
+  }
+```
+
+Inside `BlocProvider`,
+we are instantiating 
+the `TodoBloc` we defined in 
+`lib/bloc/todo_bloc.dart`
+and *immediately*
+emitting a `TodoListStarted` event.
+This event is handled in 
+the `TodoBloc` class definition
+and emits a `TodoListLoadedState`.
+
+With this provider,
+the `TodoBloc` is now accessible
+on all the widgets below in the widget tree.
+The `child` parameter of `BlocProvider`
+is the `HomePage` class we've just created.
+
+
+### 4.2 Creating and listing `TodoItem` widgets
+
+Now that we've provided the `TodoBloc`
+to the widget tree,
+it's high time we make use of it!
+Let's focus on **creating todo items**
+and **listing them** to the user.
+
+Let's focus on the former.
+We are going to first need a 
+[`TextEditingController`](https://api.flutter.dev/flutter/widgets/TextEditingController-class.html)
+to manage the text input in the `TextField`.
+
+Declare it in the `_HomePageState`
+as a property 
+and properly dispose it to avoid memory leaks.
+
+> **Note**
+>
+> We are using this in a *stateful widget*
+> because we need to dispose the controller properly
+> or else we'll have troubles with memory leaks.
+>
+> Find more information about in
+> https://stackoverflow.com/questions/61425969/is-it-okay-to-use-texteditingcontroller-in-statelesswidget-in-flutter.
+
+
+```dart
+class _HomePageState extends State<HomePage> {
+
+  TextEditingController txtFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    txtFieldController.dispose();
+    super.dispose();
+  }
+  
+  ...
+}
+```
+
+We are not going to *wrap*
+the whole body of the `_HomePageState` with 
+[`BlocBuilder`](https://pub.dev/documentation/flutter_bloc/latest/flutter_bloc/BlocBuilder-class.html).
+This will make it so we can listen to new state changes
+and the UI updates accordingly with new information.
+
+```dart
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: Scaffold(body: BlocBuilder<TodoBloc, TodoState>(
+      builder: (context, state) {
+        return ListView(
+          ...
+        )
+    )
+  }
+```
+
+We now have access to `context` and `state`.
+The latter is quite important,
+so we know what to render depending on the state of the app.
+In our case,
+we are only interested in rendering our app
+when it's in a `TodoListLoadedState` state.
+
+Here comes the fun part!
+First, change the `TodoItem` widget class
+in `lib/main.dart`
+to `ItemCard` so it does not conflict
+with the `TodoItem` class we've implemented earlier.
+
+```dart
+class ItemCard extends StatelessWidget {
+  const ItemCard({super.key});
+  ...
+}
+```
+
+And now let's change the `_HomePageState`
+`build` function so it looks like so!
+Don't worry, we'll break it down what we've changed!
+
+```dart
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: Scaffold(body: BlocBuilder<TodoBloc, TodoState>(
+      builder: (context, state) {
+        // If the list is loaded
+        if (state is TodoListLoadedState) {
+          int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
+          List<TodoItem> items = state.items;
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            children: [
+              // Textfield to add new todo item
+              TextField(
+                key: textfieldKey,
+                controller: txtFieldController,
+                decoration: const InputDecoration(
+                  labelText: 'What do we need to do?',
+                ),
+                onSubmitted: (value) {
+                  // Create new item and create AddTodo event
+                  TodoItem newTodoItem = TodoItem(description: value);
+                  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+
+                  // Clear textfield
+                  txtFieldController.clear();
+                },
+              ),
+
+              const SizedBox(height: 42),
+
+              // Title for items left
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+              ),
+
+              // List of items
+              if (items.isNotEmpty) const Divider(height: 0),
+              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard()],
+            ],
+          );
+        }
+
+        // If the state of the TodoItemList is not loaded, we show error.
+        else {
+          return const Center(child: Text("Error loading items list."));
+        }
+      },
+    )));
+  }
+```
+
+With `BlocBuilder`, by having access to the state,
+we therefore have access to the list of todo items.
+We can get the number of incomplete todo items
+by iterating over the list.
+After checking if the state of the app is properly set,
+we get this information in the snippet of code below.
+
+```dart
+  if (state is TodoListLoadedState) {
+    int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
+    List<TodoItem> items = state.items;
+
+    ...
+  }
+```
+
+We are going to be using these two properties
+in the `Text` that shows the number of items left...
+
+```dart
+Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20))
+```
+
+...and to list the todo items.
+
+```dart
+if (items.isNotEmpty) const Divider(height: 0),
+for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+```
+
+For each item in the todo list item in `TodoBloc`,
+we create an `ItemCard` widget.
+
+> **Note**
+> 
+> We aren't currently passing any information to these widgets,
+> so they will always look the same.
+> Don't worry, 
+> we will address this in the next section!
+
+The last thing we ought to change 
+is the `TextField` to create a new todo items.
+Let's check the `onSubmitted` function
+we've changed.
+
+```dart
+onSubmitted: (value) {
+  // Create new item and create AddTodo event
+  TodoItem newTodoItem = TodoItem(description: value);
+  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+
+  // Clear textfield
+  txtFieldController.clear();
+},
+```
+
+When the user submits the text,
+an `AddTodoEvent` is created with the new text.
+This is handled in `TodoBloc`, 
+as we've shown prior.
+
+And that's it!
+If you run the application now,
+input any text you like 
+and press `Done`,
+you will see the new todo items being created!
+
+<p align='center'>
+    <img width="250" alt="listing/creating" src="https://user-images.githubusercontent.com/17494745/226636752-e21c74c6-367e-4624-be79-39fdb7683739.gif">
+</p>
+
+Each todo item is the same.
+That's because we are not passing
+each todo item inside `TodoBloc` 
+to the `ItemCard` widget!
+
+
+### 4.3 Toggling and start/stopping timers in `ItemCard`
+
+As it stands,
+the app is not really useful.
+Our users need to be able to toggle 
+each `ItemCard` and start/stop timers.
+Let's address both of these concerns! 🎉
+
+Firstly,
+we are going to be converting our `ItemCard`
+from a *stateless widget* to a
+**stateful widget**.
+We need to do this because we are using
+the `StopwatchEx` to show the current timer value
+and a [`Timer`](https://api.flutter.dev/flutter/dart-async/Timer-class.html)
+class to re-render the widget so the timer value is shown properly.
+The `ItemCard` will now receive an item.
+
+```dart
+// Widget that controls the item card
+class ItemCard extends StatefulWidget {
+  final TodoItem item;
+
+  const ItemCard({required this.item, super.key});
+
+  @override
+  State<ItemCard> createState() => _ItemCardState();
+}
+
+class _ItemCardState extends State<ItemCard> {
+...
+}
+```
+
+Don't forget to pass on the `TodoItem` object
+when listing the items
+inside the `build` function
+of `_HomePageState` class!
+
+```dart
+if (items.isNotEmpty) const Divider(height: 0),
+for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],        
+```
+
+Let's now change the `_ItemCardState`
+to look like the following code.
+
+```dart
+class _ItemCardState extends State<ItemCard> {
+  // Stopwatch to be displayed
+  late StopwatchEx _stopwatch;
+
+  // Used to re-render the text showing the timer
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
+
+    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+
+    // Timer to rerender the page so the text shows the seconds passing by
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (_stopwatch.isRunning) {
+        setState(() {});
+      }
+    });
+  }
+
+  // Timer needs to be disposed when widget is destroyed to avoid memory leaks
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  // Start and stop timer button handler
+  handleButtonClick() {
+    // If timer is ongoing, we stop the stopwatch and the timer in the todo item.
+    if (_stopwatch.isRunning) {
+      widget.item.stopTimer();
+      _stopwatch.stop();
+
+      // Re-render
+      setState(() {});
+    }
+
+    // If we are to start timer, start the timer in todo item and stopwatch.
+    else {
+      widget.item.startTimer();
+      _stopwatch.start();
+
+      // Re-render
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      key: itemCardWidgetKey,
+      color: Colors.white,
+      elevation: 6,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 70),
+        child: ListTile(
+          onTap: () {
+            // Create a ToggleTodo event to toggle the `complete` field
+            context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+          },
+
+          // Checkbox-style icon showing if it's completed or not
+          leading: widget.item.completed
+              ? const Icon(
+                  Icons.task_alt,
+                  color: Colors.blue,
+                  size: 18.0,
+                )
+              : const Icon(
+                  Icons.radio_button_unchecked,
+                  color: Colors.blue,
+                  size: 18.0,
+                ),
+
+          // Start and stop timer with stopwatch text
+          trailing: Wrap(
+            children: [
+              Column(
+                children: [
+                  ElevatedButton(
+                    key: itemCardTimerButtonKey,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
+                      elevation: 0,
+                    ),
+                    onPressed: handleButtonClick,
+                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
+                  ),
+                  Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
+                ],
+              )
+            ],
+          ),
+
+          // Todo item description
+          title: Text(widget.item.description),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+Let's break down our changes!
+We first initialize
+`_stopwatch` and `_timer`.
+The former is a variable of the class
+`StopwatchEx`, 
+the wrapper of the `Stopwatch` class
+we created earlier. 
+This will be used to show the value of the timer.
+On the other hand, 
+the latter is a `Timer`.
+This is used to re-render the widget 
+every **200 milliseconds**
+so the stopwatch text shows the value of the timer properly.
+
+We are defining these variables 
+in the `initState` function,
+which is executed when the widget is mounted.
+To update the widget every 200 milliseconds,
+we simply call `setState(() {});` to force a re-render.
+
+```dart
+  void initState() {
+    super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
+
+    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+
+    // Timer to rerender the page so the text shows the seconds passing by
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (_stopwatch.isRunning) {
+        setState(() {});
+      }
+    });
+  }
+```
+
+To avoid memory leaks,
+we dispose of the `_timer` variable
+when the widget is destroyed
+in the `dispose()` function.
+
+
+#### 4.3.1 Start and stopping the timer
+
+The button and the elapsed time text
+is placed within the `trailing` parameter 
+of the `Container` that is the `ItemCard`.
+
+```dart
+trailing: Wrap(
+  children: [
+    Column(
+      children: [
+        ElevatedButton(
+          key: itemCardTimerButtonKey,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
+            elevation: 0,
+          ),
+          onPressed: handleButtonClick,
+          child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
+        ),
+        Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
+      ],
+    )
+  ],
+),
+```
+
+We are *leveraging* the `_stopwatch` variable
+to show either a "Start" or "Stop" button.
+Additionally, we call the `elapsedMilliseconds()`
+function and show it to the user.
+This value is properly shown because the widget is rendered
+every 200ms, as stated previously.
+
+The `handleButtonClick()` is called
+every time the button is pressed.
+In this function,
+depending on whether the timer is running or not,
+we call the `stopTimer()` or `startTimer()`
+functions of the `TodoItem` class.
+
+
+#### 4.3.2 Toggling the `ItemCard` 
+
+Luckily, toggling the todo item
+between "complete" and "incomplete"
+is super easy!
+We just need to create a `ToggleTodoEvent`!
+
+```dart
+onTap: () {
+  // Create a ToggleTodo event to toggle the `complete` field
+  context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+},
+```
+
+Check the file
+[`lib/main.dart`](https://github.com/dwyl/flutter-bloc-tutorial/blob/0ac576a9ee3ea7bb1fb87787ab4f1cd89972dbaf/lib/main.dart)
+for the final version of how
+the file should look like!
+
+## 5. Run the app!
+
+We've made all the necessary changes!
+Let's run the app and see how it fares!
+
+<p align='center'>
+    <img width="250" alt="final" src="https://user-images.githubusercontent.com/17494745/226667102-7d63a74e-4cb6-4090-9cc6-0ffda53f8e1f.gif">
+</p>
+
+
+Awesome! 🎉
+
+Our tests should all pass as well!
+Run `flutter test`.
+You should see this output.
+
+```sh
+00:03 +17: All tests passed! 
+```
+
+Heck yeah! 🥳
+
+We are *successfully* leveraging `Bloc`
+to manage the list of todo items.
+These items are accessible by all the widgets
+in the widget tree.
+Every widget is able to access them
+*and also make changes to them*,
+which is what happens when we mutate the todo item list,
+either by adding new elements
+or toggling items within it.
+
+# I need help! ❓
+If you have some feedback or have any question, 
+do not hesitate and open an 
+[issue](https://github.com/dwyl/flutter-bloc-tutorial/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)! 
+We are here to help and are happy for your contribution!
