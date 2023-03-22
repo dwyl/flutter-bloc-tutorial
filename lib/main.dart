@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                   Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
                 ],
               ),
-              backgroundColor: Colors.black,
+              backgroundColor: const Color.fromARGB(255, 81, 72, 72),
               elevation: 0.0,
             ),
             body: BlocBuilder<TodoBloc, TodoState>(
@@ -57,33 +57,37 @@ class HomePage extends StatelessWidget {
                   List<TodoItem> items = state.items;
 
                   return SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-                      child: Column(
-                        children: [
-                          // Textfield to add new todo item
-                          const InputTextField(),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+                          child: Column(
+                            children: [
+                              // Textfield to add new todo item
+                              const InputTextField(),
 
-                          // Title for items left
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
-                            child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+                              // Title for items left
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
+                                child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+                              ),
+                            ],
                           ),
+                        ),
 
-                          // List of items
-                          Expanded(
-                            child: ListView(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              children: [
-                                if (items.isNotEmpty) const Divider(height: 0),
-                                for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
-                              ],
-                            ),
+                        // List of items
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            children: [
+                              if (items.isNotEmpty) const Divider(height: 0),
+                              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -200,36 +204,43 @@ class _ItemCardState extends State<ItemCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Container(
       key: itemCardWidgetKey,
-      color: Colors.white,
-      elevation: 6,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 70),
-        child: ListTile(
-          onTap: () {
-            // Create a ToggleTodo event to toggle the `complete` field
+      constraints: const BoxConstraints(minHeight: 70),
+      child: ListTile(
+        onTap: () {
+          // Create a ToggleTodo event to toggle the `complete` field
+          // ONLY if the timer is stopped
+          if (!_stopwatch.isRunning) {
             context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
-          },
+          }
+        },
 
-          // Checkbox-style icon showing if it's completed or not
-          leading: widget.item.completed
-              ? const Icon(
-                  Icons.task_alt,
-                  color: Colors.blue,
-                  size: 18.0,
-                )
-              : const Icon(
-                  Icons.radio_button_unchecked,
-                  color: Colors.blue,
-                  size: 18.0,
-                ),
+        // Checkbox-style icon showing if it's completed or not
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            widget.item.completed
+                ? const Icon(
+                    Icons.check_box,
+                    color: Colors.blue,
+                    size: 18.0,
+                  )
+                : const Icon(
+                    Icons.check_box_outline_blank,
+                    color: Colors.blue,
+                    size: 18.0,
+                  ),
+          ],
+        ),
 
-          // Start and stop timer with stopwatch text
-          trailing: Wrap(
-            children: [
-              Column(
-                children: [
+        // Start and stop timer with stopwatch text
+        trailing: Wrap(
+          children: [
+            Column(
+              children: [
+                // If the item is completed, we hide the button
+                if (!widget.item.completed)
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
                     style: ElevatedButton.styleFrom(
@@ -239,15 +250,17 @@ class _ItemCardState extends State<ItemCard> {
                     onPressed: handleButtonClick,
                     child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
                   ),
-                  Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
-                ],
-              )
-            ],
-          ),
-
-          // Todo item description
-          title: Text(widget.item.description),
+                Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
+              ],
+            )
+          ],
         ),
+
+        // Todo item description
+        title: Text(widget.item.description,
+            style: TextStyle(
+                decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
       ),
     );
   }
