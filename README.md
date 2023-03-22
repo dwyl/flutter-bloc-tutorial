@@ -24,6 +24,7 @@ Use these links to skip straight to the section that interests you:
 
 - [A note 🗒️](#a-note-️)
 - [Why? 👀](#why-)
+  - [Do I actually need this?](#do-i-actually-need-this)
 - [What? 🤷‍♂️](#what-️)
   - [Core concepts 🧱](#core-concepts-)
     - [Streams](#streams)
@@ -124,6 +125,50 @@ Examples include
 [Provider](https://pub.dev/packages/provider)
 and [**Bloc**](https://bloclibrary.dev/#/).
 The latter will be the focus of this tutorial.
+
+## Do I actually need this?
+
+As it often occurs, *it depends*.
+For simple apps,
+adding the `bloc` library 
+and having your code follow an opinionated format
+will probably incur more boilerplate 
+and technical debt than is actually needed.
+
+Yes, the `bloc` library also has **`cubits`** 
+(we will discuss this later on this document),
+which aim to simplify the implementation of `blocs`.
+However,
+by being forced to separate concerns 
+(we will see later that `BLoC` effectively separates
+business logic from UI) 
+and embedding `blocs` into our application
+can be *too much* if we just want to create simple features.
+
+The hard part is knowing *where the line is*.
+`Bloc`'s properties shine with large apps 
+because it's much easier to maintain.
+It might not shine in simpler apps because
+it will have more code than it actually needs to have.
+
+There's no easy answer for this.
+There are often discussions about
+whether to use `Riverpod` or `Bloc`,
+when these libraries have a few distinctions:
+
+- `Riverpod` is a library that focuses on **dependency injection**,
+and makes lifting state up and down the widget tree
+much more convenient. 
+This process can effectively be used as shared state between widgets.
+- `Bloc` os focussed on making state management 
+as safe and predictable as possible.
+You can find some comments from the creator
+of the `flutter_bloc` library in 
+https://www.reddit.com/r/FlutterDev/comments/bmrvey/comment/en1kefb/?utm_source=share&utm_medium=web2x&context=3.
+
+While this app might be "too simple for `Bloc`",
+it's meant to showcase on how one implements it
+in a `Flutter` app.
 
 # What? 🤷‍♂️
 
