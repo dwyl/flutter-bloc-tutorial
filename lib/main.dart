@@ -36,51 +36,64 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(body: BlocBuilder<TodoBloc, TodoState>(
-      builder: (context, state) {
-        // If the list is loaded
-        if (state is TodoListLoadedState) {
-          int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
-          List<TodoItem> items = state.items;
-
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-              child: Column(
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Textfield to add new todo item
-                  const InputTextField(),
-
-                  // Title for items left
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
-                    child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
-                  ),
-
-                  // List of items
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      children: [
-                        if (items.isNotEmpty) const Divider(height: 0),
-                        for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
-                      ],
-                    ),
-                  ),
+                  // dwyl logo
+                  Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
                 ],
               ),
+              backgroundColor: Colors.black,
+              elevation: 0.0,
             ),
-          );
-        }
+            body: BlocBuilder<TodoBloc, TodoState>(
+              builder: (context, state) {
+                // If the list is loaded
+                if (state is TodoListLoadedState) {
+                  int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
+                  List<TodoItem> items = state.items;
 
-        // If the state of the TodoItemList is not loaded, we show error.
-        else {
-          return const Center(child: Text("Error loading items list."));
-        }
-      },
-    )));
+                  return SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+                      child: Column(
+                        children: [
+                          // Textfield to add new todo item
+                          const InputTextField(),
+
+                          // Title for items left
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
+                            child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+                          ),
+
+                          // List of items
+                          Expanded(
+                            child: ListView(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              children: [
+                                if (items.isNotEmpty) const Divider(height: 0),
+                                for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                // If the state of the TodoItemList is not loaded, we show error.
+                else {
+                  return const Center(child: Text("Error loading items list."));
+                }
+              },
+            )));
   }
 }
 
@@ -123,8 +136,6 @@ class _InputTextFieldState extends State<InputTextField> {
     );
   }
 }
-
-
 
 // Widget that controls the item card
 class ItemCard extends StatefulWidget {
