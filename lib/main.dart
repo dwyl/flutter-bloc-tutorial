@@ -59,20 +59,11 @@ class HomePage extends StatelessWidget {
                   return SafeArea(
                     child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-                          child: Column(
-                            children: [
+                        const Padding(
+                          padding: EdgeInsets.only(right: 16.0, left: 16.0),
+                          child:
                               // Textfield to add new todo item
-                              const InputTextField(),
-
-                              // Title for items left
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
-                                child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
-                              ),
-                            ],
-                          ),
+                              InputTextField(),
                         ),
 
                         // List of items
