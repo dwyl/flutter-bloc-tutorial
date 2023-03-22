@@ -9,7 +9,6 @@ import 'package:todo/utils.dart';
 
 // Keys used for testing
 final textfieldKey = UniqueKey();
-final itemsLeftStringKey = UniqueKey();
 final itemCardWidgetKey = UniqueKey();
 final itemCardTimerButtonKey = UniqueKey();
 

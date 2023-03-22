@@ -9,7 +9,6 @@ void main() {
 
     // Find the text input and string stating 0 todos created
     expect(find.byKey(textfieldKey), findsOneWidget);
-    expect(find.byKey(itemsLeftStringKey), findsOneWidget);
   });
 
   testWidgets('Adding a new todo item shows a card', (WidgetTester tester) async {
@@ -18,7 +17,6 @@ void main() {
 
     // Find the text input and string stating 0 todos created
     expect(find.byKey(textfieldKey), findsOneWidget);
-    expect(find.byKey(itemsLeftStringKey), findsOneWidget);
     expect(find.byKey(itemCardWidgetKey), findsNothing);
 
     // Type text into todo input
@@ -70,7 +68,7 @@ void main() {
     Finder checkboxFinder = find.descendant(of: find.byKey(itemCardWidgetKey), matching: find.byType(Icon));
     Icon checkboxWidget = tester.firstWidget<Icon>(checkboxFinder);
 
-    expect(checkboxWidget.icon, Icons.radio_button_unchecked);
+    expect(checkboxWidget.icon, Icons.check_box_outline_blank);
 
     // Tap on item card
     await tester.tap(find.byKey(itemCardWidgetKey));
@@ -78,7 +76,7 @@ void main() {
 
     // Updating item card widget and checkbox value should be true
     checkboxWidget = tester.firstWidget<Icon>(checkboxFinder);
-    expect(checkboxWidget.icon, Icons.task_alt);
+    expect(checkboxWidget.icon, Icons.check_box);
   });
 
   testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
