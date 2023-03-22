@@ -53,7 +53,6 @@ class HomePage extends StatelessWidget {
               builder: (context, state) {
                 // If the list is loaded
                 if (state is TodoListLoadedState) {
-                  int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
                   List<TodoItem> items = state.items;
 
                   return SafeArea(
