@@ -31,22 +31,8 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  // https://stackoverflow.com/questions/61425969/is-it-okay-to-use-texteditingcontroller-in-statelesswidget-in-flutter
-  TextEditingController txtFieldController = TextEditingController();
-
-  @override
-  void dispose() {
-    txtFieldController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,23 +49,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   // Textfield to add new todo item
-                  TextField(
-                    key: textfieldKey,
-                    controller: txtFieldController,
-                    decoration: const InputDecoration(
-                      labelText: 'What do we need to do?',
-                    ),
-                    onSubmitted: (value) {
-                      if (value.isNotEmpty) {
-                        // Create new item and create AddTodo event
-                        TodoItem newTodoItem = TodoItem(description: value);
-                        BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
-
-                        // Clear textfield
-                        txtFieldController.clear();
-                      }
-                    },
-                  ),
+                  const InputTextField(),
 
                   // Title for items left
                   Padding(
@@ -113,6 +83,48 @@ class _HomePageState extends State<HomePage> {
     )));
   }
 }
+
+// Widget that controls the textfield to create a new todo item
+class InputTextField extends StatefulWidget {
+  const InputTextField({super.key});
+
+  @override
+  State<InputTextField> createState() => _InputTextFieldState();
+}
+
+class _InputTextFieldState extends State<InputTextField> {
+  // https://stackoverflow.com/questions/61425969/is-it-okay-to-use-texteditingcontroller-in-statelesswidget-in-flutter
+  TextEditingController txtFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    txtFieldController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      key: textfieldKey,
+      controller: txtFieldController,
+      decoration: const InputDecoration(
+        labelText: 'What do we need to do?',
+      ),
+      onSubmitted: (value) {
+        if (value.isNotEmpty) {
+          // Create new item and create AddTodo event
+          TodoItem newTodoItem = TodoItem(description: value);
+          BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+
+          // Clear textfield
+          txtFieldController.clear();
+        }
+      },
+    );
+  }
+}
+
+
 
 // Widget that controls the item card
 class ItemCard extends StatefulWidget {
