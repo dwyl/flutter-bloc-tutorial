@@ -62,6 +62,8 @@ Use these links to skip straight to the section that interests you:
       - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
       - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
   - [5. Run the app!](#5-run-the-app)
+  - [(Optional) 6. Give the UI a new look ✨](#optional-6-give-the-ui-a-new-look-)
+    - [6.1](#61)
 - [I need help! ❓](#i-need-help-)
 
 
@@ -2461,6 +2463,36 @@ Every widget is able to access them
 which is what happens when we mutate the todo item list,
 either by adding new elements
 or toggling items within it.
+
+
+## (Optional) 6. Give the UI a new look ✨
+
+We hope this tutorial was useful to you,
+because it certainly is useful to us as well!
+Given we are developing our own
+[app](https://github.com/dwyl/app),
+this section will focus on changing the UI 
+so it looks as close to the 
+[wireframes](https://www.figma.com/file/WrpkKGJNYZbeCzMRDVtvQLbC/dwyl-app?node-id=0-1&t=rfnjWXLzpiyhJmjT-0)
+as possible.
+
+
+<p align='center'>
+  <img class=mobile-image width="250" style="display:inline-block" src="https://user-images.githubusercontent.com/17494745/227018458-19a5f8bf-6443-43d9-a02a-4a7f355f2994.png" />
+  <img class=mobile-image width="250" style="display:inline-block" src="https://user-images.githubusercontent.com/17494745/227019098-22e7c26e-dd23-4f70-9f25-6f1f4eb16020.png" />
+</p>
+
+As you can see, 
+the `TextField` is meant to expand
+*over* the rest of the page when focussed.
+After saving,
+it should de-expand back to its normal state.
+
+Let's start changing our app!
+
+### 6.1 
+
+
 
 # I need help! ❓
 If you have some feedback or have any question, 
