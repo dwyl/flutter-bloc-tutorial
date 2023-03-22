@@ -57,40 +57,51 @@ class _HomePageState extends State<HomePage> {
           int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
           List<TodoItem> items = state.items;
 
-          return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-            children: [
-              // Textfield to add new todo item
-              TextField(
-                key: textfieldKey,
-                controller: txtFieldController,
-                decoration: const InputDecoration(
-                  labelText: 'What do we need to do?',
-                ),
-                onSubmitted: (value) {
-                  if(value.isNotEmpty) {
-                    // Create new item and create AddTodo event
-                    TodoItem newTodoItem = TodoItem(description: value);
-                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+              child: Column(
+                children: [
+                  // Textfield to add new todo item
+                  TextField(
+                    key: textfieldKey,
+                    controller: txtFieldController,
+                    decoration: const InputDecoration(
+                      labelText: 'What do we need to do?',
+                    ),
+                    onSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        // Create new item and create AddTodo event
+                        TodoItem newTodoItem = TodoItem(description: value);
+                        BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
-                    // Clear textfield
-                    txtFieldController.clear();
-                  }
-                },
+                        // Clear textfield
+                        txtFieldController.clear();
+                      }
+                    },
+                  ),
+
+                  // Title for items left
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
+                    child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+                  ),
+
+                  // List of items
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      children: [
+                        if (items.isNotEmpty) const Divider(height: 0),
+                        for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                      ],
+                    ),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 42),
-
-              // Title for items left
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
-              ),
-
-              // List of items
-              if (items.isNotEmpty) const Divider(height: 0),
-              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
-            ],
+            ),
           );
         }
 
