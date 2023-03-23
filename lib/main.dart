@@ -134,34 +134,41 @@ class _NewTodoPageState extends State<NewTodoPage> {
         home: Scaffold(
             appBar: const NavigationBar(),
             body: SafeArea(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-                    child:
-                        // Textfield to add new todo item
-                        TextField(
-                      key: textfieldOnNewPageKey,
-                      controller: txtFieldController,
-                      decoration: const InputDecoration(
-                        labelText: 'What do we need to do?',
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        key: textfieldOnNewPageKey,
+                        controller: txtFieldController,
+                        expands: true,
+                        maxLines: null,
+                        decoration: const InputDecoration(labelText: 'What do we need to do?', alignLabelWithHint: true, border: InputBorder.none),
                       ),
-                      onSubmitted: (value) {
-                        if (value.isNotEmpty) {
-                          // Create new item and create AddTodo event
-                          TodoItem newTodoItem = TodoItem(description: value);
-                          BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
-
-                          // Clear textfield
-                          txtFieldController.clear();
-
-                          // Go back to home page
-                          Navigator.pop(context);
-                        }
-                      },
                     ),
-                  ),
-                ],
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: ElevatedButton(
+                        child: const Text('Save'),
+                        onPressed: () {
+                          final value = txtFieldController.text;
+                          if (value.isNotEmpty) {
+                            // Create new item and create AddTodo event
+                            TodoItem newTodoItem = TodoItem(description: value);
+                            BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+
+                            // Clear textfield
+                            txtFieldController.clear();
+
+                            // Go back to home page
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )));
   }
