@@ -19,11 +19,15 @@ void main() {
     expect(find.byKey(textfieldKey), findsOneWidget);
     expect(find.byKey(itemCardWidgetKey), findsNothing);
 
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
     // Type text into todo input
-    await tester.enterText(find.byKey(textfieldKey), 'new todo');
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
     expect(
         find.descendant(
-          of: find.byKey(textfieldKey),
+          of: find.byKey(textfieldOnNewPageKey),
           matching: find.text('new todo'),
         ),
         findsOneWidget);
@@ -33,7 +37,7 @@ void main() {
     // Input is cleared
     expect(
       find.descendant(
-        of: find.byKey(textfieldKey),
+        of: find.byKey(textfieldOnNewPageKey),
         matching: find.text('new todo'),
       ),
       findsNothing,
@@ -54,8 +58,12 @@ void main() {
     expect(find.byKey(textfieldKey), findsOneWidget);
     expect(find.byKey(itemCardWidgetKey), findsNothing);
 
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
     // Type text into todo input
-    await tester.enterText(find.byKey(textfieldKey), 'new todo');
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
     await tester.testTextInput.receiveAction(TextInputAction.done);
 
     // Pump the widget so it renders the new item
@@ -87,8 +95,12 @@ void main() {
     expect(find.byKey(textfieldKey), findsOneWidget);
     expect(find.byKey(itemCardWidgetKey), findsNothing);
 
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
     // Type text into todo input
-    await tester.enterText(find.byKey(textfieldKey), 'new todo');
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
     await tester.testTextInput.receiveAction(TextInputAction.done);
 
     // Pump the widget so it renders the new item

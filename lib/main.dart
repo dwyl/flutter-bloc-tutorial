@@ -9,6 +9,7 @@ import 'package:todo/utils.dart';
 
 // Keys used for testing
 final textfieldKey = UniqueKey();
+final textfieldOnNewPageKey = UniqueKey();
 final itemCardWidgetKey = UniqueKey();
 final itemCardTimerButtonKey = UniqueKey();
 
@@ -37,17 +38,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            appBar: AppBar(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // dwyl logo
-                  Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
-                ],
-              ),
-              backgroundColor: const Color.fromARGB(255, 81, 72, 72),
-              elevation: 0.0,
-            ),
+            appBar: const NavigationBar(),
             body: BlocBuilder<TodoBloc, TodoState>(
               builder: (context, state) {
                 // If the list is loaded
@@ -57,11 +48,20 @@ class HomePage extends StatelessWidget {
                   return SafeArea(
                     child: Column(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(right: 16.0, left: 16.0),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16.0, left: 16.0),
                           child:
-                              // Textfield to add new todo item
-                              InputTextField(),
+                              // Textfield to add new todo item (will open another page)
+                              TextField(
+                            key: textfieldKey,
+                            keyboardType: TextInputType.none,
+                            onTap: () {
+                              Navigator.of(context).push(_createRoute());
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'What do we need to do?',
+                            ),
+                          ),
                         ),
 
                         // List of items
@@ -90,15 +90,35 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// Widget that controls the textfield to create a new todo item
-class InputTextField extends StatefulWidget {
-  const InputTextField({super.key});
+// PAGES ----------------------------
 
-  @override
-  State<InputTextField> createState() => _InputTextFieldState();
+Route _createRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => const NewTodoPage(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0.0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }
 
-class _InputTextFieldState extends State<InputTextField> {
+// Page that shows a textfield expanded to create a new todo item
+class NewTodoPage extends StatefulWidget {
+  const NewTodoPage({super.key});
+
+  @override
+  State<NewTodoPage> createState() => _NewTodoPageState();
+}
+
+class _NewTodoPageState extends State<NewTodoPage> {
   // https://stackoverflow.com/questions/61425969/is-it-okay-to-use-texteditingcontroller-in-statelesswidget-in-flutter
   TextEditingController txtFieldController = TextEditingController();
 
@@ -110,24 +130,68 @@ class _InputTextFieldState extends State<InputTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      key: textfieldKey,
-      controller: txtFieldController,
-      decoration: const InputDecoration(
-        labelText: 'What do we need to do?',
-      ),
-      onSubmitted: (value) {
-        if (value.isNotEmpty) {
-          // Create new item and create AddTodo event
-          TodoItem newTodoItem = TodoItem(description: value);
-          BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+    return MaterialApp(
+        home: Scaffold(
+            appBar: const NavigationBar(),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+                    child:
+                        // Textfield to add new todo item
+                        TextField(
+                      key: textfieldOnNewPageKey,
+                      controller: txtFieldController,
+                      decoration: const InputDecoration(
+                        labelText: 'What do we need to do?',
+                      ),
+                      onSubmitted: (value) {
+                        if (value.isNotEmpty) {
+                          // Create new item and create AddTodo event
+                          TodoItem newTodoItem = TodoItem(description: value);
+                          BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
-          // Clear textfield
-          txtFieldController.clear();
-        }
-      },
+                          // Clear textfield
+                          txtFieldController.clear();
+
+                          // Go back to home page
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+// WIDGETS --------------------------
+
+// Widget for the navigation bar
+class NavigationBar extends StatelessWidget with PreferredSizeWidget {
+  const NavigationBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // dwyl logo
+          Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
+        ],
+      ),
+      backgroundColor: const Color.fromARGB(255, 81, 72, 72),
+      elevation: 0.0,
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(50);
 }
 
 // Widget that controls the item card
