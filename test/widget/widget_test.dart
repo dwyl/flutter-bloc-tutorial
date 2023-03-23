@@ -32,7 +32,9 @@ void main() {
         ),
         findsOneWidget);
 
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    // Tap "Save" button to add new todo item
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
     // Input is cleared
     expect(
@@ -62,9 +64,10 @@ void main() {
     await tester.tap(find.byKey(textfieldKey));
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    // Type text into todo input
+    // Type text into todo input and tap "Save" button to add new todo item
     await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
     // Pump the widget so it renders the new item
     await tester.pumpAndSettle(const Duration(seconds: 2));
@@ -99,9 +102,10 @@ void main() {
     await tester.tap(find.byKey(textfieldKey));
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    // Type text into todo input
+    // Type text into todo input and tap "Save" button to add new todo item
     await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
     // Pump the widget so it renders the new item
     await tester.pumpAndSettle(const Duration(seconds: 2));

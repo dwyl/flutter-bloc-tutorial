@@ -10,6 +10,7 @@ import 'package:todo/utils.dart';
 // Keys used for testing
 final textfieldKey = UniqueKey();
 final textfieldOnNewPageKey = UniqueKey();
+final saveButtonKey = UniqueKey();
 final itemCardWidgetKey = UniqueKey();
 final itemCardTimerButtonKey = UniqueKey();
 
@@ -138,6 +139,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0),
                 child: Column(
                   children: [
+                    // Textfield that is expanded and borderless
                     Expanded(
                       child: TextField(
                         key: textfieldOnNewPageKey,
@@ -147,9 +149,13 @@ class _NewTodoPageState extends State<NewTodoPage> {
                         decoration: const InputDecoration(labelText: 'What do we need to do?', alignLabelWithHint: true, border: InputBorder.none),
                       ),
                     ),
+
+                    // Save button.
+                    // When submitted, it adds a new todo item, clears the controller and navigates back
                     Align(
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
+                        key: saveButtonKey,
                         child: const Text('Save'),
                         onPressed: () {
                           final value = txtFieldController.text;
