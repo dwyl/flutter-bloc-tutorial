@@ -135,4 +135,26 @@ void main() {
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
     expect(buttonWidget.child.toString(), const Text("Start").toString());
   });
+
+  testWidgets('Navigate to new page and go back', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Go back to the page
+    expect(find.byKey(textfieldKey), findsNothing);
+
+    await tester.tap(find.byKey(backButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // User went back to the home page
+    expect(find.byKey(textfieldKey), findsOneWidget);
+  });
 }

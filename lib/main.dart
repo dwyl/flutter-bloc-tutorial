@@ -13,6 +13,7 @@ final textfieldOnNewPageKey = UniqueKey();
 final saveButtonKey = UniqueKey();
 final itemCardWidgetKey = UniqueKey();
 final itemCardTimerButtonKey = UniqueKey();
+final backButtonKey = UniqueKey();
 
 // coverage:ignore-start
 void main() {
@@ -39,7 +40,9 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            appBar: const NavigationBar(),
+            appBar: NavigationBar(
+              givenContext: context,
+            ),
             body: BlocBuilder<TodoBloc, TodoState>(
               builder: (context, state) {
                 // If the list is loaded
@@ -57,7 +60,7 @@ class HomePage extends StatelessWidget {
                             key: textfieldKey,
                             keyboardType: TextInputType.none,
                             onTap: () {
-                              Navigator.of(context).push(_createRoute());
+                              Navigator.of(context).push(navigateToNewTodoItemPage());
                             },
                             decoration: const InputDecoration(
                               labelText: 'What do we need to do?',
@@ -93,7 +96,7 @@ class HomePage extends StatelessWidget {
 
 // PAGES ----------------------------
 
-Route _createRoute() {
+Route navigateToNewTodoItemPage() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => const NewTodoPage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -133,7 +136,10 @@ class _NewTodoPageState extends State<NewTodoPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            appBar: const NavigationBar(),
+            appBar: NavigationBar(
+              givenContext: context,
+              showGoBackButton: true,
+            ),
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0),
@@ -156,7 +162,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
                         key: saveButtonKey,
-                        child: const Text('Save'),
+                        style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 75, 192, 169)),
                         onPressed: () {
                           final value = txtFieldController.text;
                           if (value.isNotEmpty) {
@@ -171,6 +177,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                             Navigator.pop(context);
                           }
                         },
+                        child: const Text('Save'),
                       ),
                     ),
                   ],
@@ -184,15 +191,19 @@ class _NewTodoPageState extends State<NewTodoPage> {
 
 // Widget for the navigation bar
 class NavigationBar extends StatelessWidget with PreferredSizeWidget {
-  const NavigationBar({
-    super.key,
-  });
+  // Boolean that tells the bar to have a button to go to the previous page
+  final bool showGoBackButton;
+  // Build context for the "go back" button works
+  final BuildContext givenContext;
+
+  const NavigationBar({super.key, required this.givenContext, this.showGoBackButton = false});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // dwyl logo
           Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
@@ -200,6 +211,15 @@ class NavigationBar extends StatelessWidget with PreferredSizeWidget {
       ),
       backgroundColor: const Color.fromARGB(255, 81, 72, 72),
       elevation: 0.0,
+      centerTitle: true,
+      leading: showGoBackButton
+          ? BackButton(
+            key: backButtonKey,
+              onPressed: () {
+                Navigator.pop(givenContext);
+              },
+            )
+          : null,
     );
   }
 
