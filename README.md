@@ -2675,6 +2675,23 @@ we are adding a "Go Back" button
 to the start of the `AppBar`
 that pops the `context` that is passed on into the widget.
 
+We are also using an image icon.
+We need to create the directory
+`assets/icon`
+and place [`icon.png`](./assets/icon/icon.png) there
+(you can download the image from this repo).
+Inside `pubspec.yaml`,
+we need to add the path to this folder
+so `Flutter` has access to the resource.
+
+```yaml
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icon/
+```
+
 Don't forget to add the following line 
 alongside the other keys.
 
@@ -2917,7 +2934,7 @@ and replace with the following.
 As you can see,
 we are reusing some code that was previously in `HomePage`.
 
-- the `TextField` is almost the same,]
+- the `TextField` is almost the same,
 except it is expanded to fill the whole screen
 by setting the `expands` and `maxLines` parameters.
 - we are adding a `Save` button which,
