@@ -6,11 +6,11 @@
 
 
 
-Learn
-**`Block`**
-for **Flutter**
-to better manage your
-app's state.
+Learn how to use
+**`Bloc`**
+in **Flutter**
+to manage your
+App's state.
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/dwyl/flutter-bloc-tutorial/ci.yml?label=build&style=flat-square&branch=main)
 [![codecov.io](https://img.shields.io/codecov/c/github/dwyl/flutter-bloc-tutorial/main.svg?style=flat-square)](https://codecov.io/github/dwyl/flutter-bloc-tutorial?branch=main)
@@ -70,7 +70,7 @@ Use these links to skip straight to the section that interests you:
 This tutorial assumes you have prior basic knowledge of `Flutter`.
 If this is your first time using `Flutter`,
 please visit [`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
-first to learn the basics. 
+_first_ to learn the basics. 
 
 After that, 
 we *highly recommend* you
@@ -100,7 +100,7 @@ that **is needed across many widgets of the app**.
 This shared state is called **application state**,
 and pertains to the state of the whole app.
 An example of these are shopping carts in an 
-e-commerce app or user preferences.
+e-commerce app or personal preferences.
 
 Consider the following gif, taken directly from the Flutter docs -> https://docs.flutter.dev/development/data-and-backend/state-mgmt/intro
 
@@ -118,13 +118,15 @@ This is an example of shared state.
 In the Flutter ecosystem, 
 there are a few frameworks that you can choose
 that will help you setup 
-and *utilize* shared state in your application
+and *use* shared state in your application
 and do the heavy lifting for you.
 Examples include
 [Riverpod](https://riverpod.dev/),
 [Provider](https://pub.dev/packages/provider)
 and [**Bloc**](https://bloclibrary.dev/#/).
-The latter will be the focus of this tutorial.
+Bloc is the newest of the options
+and is built by people who previously used 
+the other options on larger `Flutter` Apps.
 
 ## Do I actually need this?
 
@@ -133,7 +135,7 @@ For simple apps,
 adding the `bloc` library 
 and having your code follow an opinionated format
 will probably incur more boilerplate 
-and technical debt than is actually needed.
+and learning curve than is actually needed.
 
 Yes, the `bloc` library also has **`cubits`** 
 (we will discuss this later on this document),
@@ -160,11 +162,12 @@ when these libraries have a few distinctions:
 and makes lifting state up and down the widget tree
 much more convenient. 
 This process can effectively be used as shared state between widgets.
+
 - `Bloc` os focussed on making state management 
 as safe and predictable as possible.
 You can find some comments from the creator
-of the `flutter_bloc` library in 
-https://www.reddit.com/r/FlutterDev/comments/bmrvey/comment/en1kefb/?utm_source=share&utm_medium=web2x&context=3.
+of the `flutter_bloc` library in:
+[reddit.com/r/FlutterDev/comments/bmrvey](https://www.reddit.com/r/FlutterDev/comments/bmrvey/comment/en1kefb/?utm_source=share&utm_medium=web2x&context=3)
 
 While this app might be "too simple for `Bloc`",
 it's meant to showcase on how one implements it
@@ -172,10 +175,11 @@ in a `Flutter` app.
 
 # What? 🤷‍♂️
 
-`BLoC` is actually an acronym for 
+`BLoC` is an acronym for
 **B**usiness **L**ogic **C**omponents,
-and is effectively a design pattern created by Google
-that *separates* business logic from the presentation layer.
+and is a **design pattern** created by **`Google`**
+that *separates* business logic 
+from the presentation layer.
 
 From this concept arose [`Bloc`](https://bloclibrary.dev/#/),
 a state management library created by 
@@ -187,9 +191,9 @@ For every interaction that is made in the application,
 **state should emerge from it**. 
 For example, when you make an API call,
 the app should show a loading animation (**loading state**).
-When the internet is disabled,
-a notification could be shown to the user
-stating there is no internet connection.
+When the internet required but not available,
+this should be reflected in the interface
+so the `person` knows they have reduced functionality.
 
 There are a few benefits for using `Bloc`:
 - the logic is *kept out of the widgets*.
@@ -245,9 +249,10 @@ Quoting `Bloc`'s docs:
 > A `Bloc` is a more advanced class 
 > which relies on `events` to trigger `state` changes rather than functions. 
 > `Bloc` also extends `BlocBase`,
-> which means it has a similar public API as `Cubit`. 
+> meaning it has a similar public API to `Cubit`. 
 > However, rather than calling a `function` on a `Bloc` 
-> and directly emitting a new `state`, `Blocs` receive `events` 
+> and directly emitting a new `state`, 
+> `Blocs` receive `events` 
 > and convert the incoming `events` into outgoing `states`.
 
 Phew, that was a mouthful!
@@ -255,7 +260,8 @@ Let's break that down.
 
 <img width="1144" alt="bloc-diagram" src="https://user-images.githubusercontent.com/17494745/223118425-a8a86010-82d9-4c1e-8fde-41025d5ae88b.png">
 
-> credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
+> Image credit: 
+> [youtube.com/BradCypert](https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert)
 
 We define `Events` for a given class
 that we want to manage. 
@@ -276,21 +282,22 @@ Afterwards, the `bloc` **emits a `state`**.
 
 ### [Cubit](https://bloclibrary.dev/#/coreconcepts?id=cubit) 
 
-A `Cubit` is a **much simpler, minimalistic version of a `Bloc`**.
+A `Cubit` is a **much simpler, minimalist version of a `Bloc`**.
 Unlike `Bloc`,
 the `Cubit` exposes functions that can be invoked
 to trigger state changes.
 
-Check the following diagram.
+Check the following diagram:
 
 <img width="1127" alt="cubit-diagram" src="https://user-images.githubusercontent.com/17494745/223120206-dee22295-94f4-472a-803d-45ca9f3cab45.png">
 
-> credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
+> Image credit: 
+> [youtube.com/BradCypert](https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert)
 
 `Cubits`, 
 although similar,
 differ from `Blocs` because
-**they don't have events**.
+**they don't have `events`**.
 The `Cubit` has *methods*,
 there is no need to pass instances of `events`
 like we do in `Blocs`.
@@ -313,7 +320,7 @@ As always, the answer is... **it depends**.
 | **Advanced Event Transformations** |    | EventTransformer                   |
 
 `Cubit` shines with its simplicity
-and it's better suited for simple use cases.
+and is better suited for simple use cases.
 If your team is struggling to model event transitions,
 you might want to start with `Cubits`.
 
@@ -327,10 +334,10 @@ You can always refactor the code later on
 to a `Bloc` when you have a clearer idea
 of the possible events of your application.
 
-If you want to see a more in-depth
+For an in-depth
 comparison between the two, 
-please visit
-https://bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc.
+please see:
+[bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc](https://bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc)
 
 
 ## `BLoC` concepts in Flutter 🦋
@@ -1942,7 +1949,7 @@ Now that we've provided the `TodoBloc`
 to the widget tree,
 it's high time we make use of it!
 Let's focus on **creating todo items**
-and **listing them** to the user.
+and **listing them** to the person.
 
 Let's focus on the former.
 We are going to first need a 
