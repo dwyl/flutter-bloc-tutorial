@@ -8,7 +8,7 @@
 
 Learn how to use
 **`Bloc`**
-in **Flutter**
+in **`Flutter`**
 to manage your
 App's state.
 
@@ -36,7 +36,7 @@ Use these links to skip straight to the section that interests you:
     - [`Bloc` Events](#bloc-events)
     - [`Bloc` State](#bloc-state)
     - [Dependency injection with `BlocProvider`](#dependency-injection-with-blocprovider)
-    - [Making UI *react* to Bloc state changes with `BlocBuilder`](#making-ui-react-to-bloc-state-changes-with-blocbuilder)
+    - [Updating the UI following Bloc state changes with `BlocBuilder`](#updating-the-ui-following-bloc-state-changes-with-blocbuilder)
     - [Listening to state changes with `BlocListener`](#listening-to-state-changes-with-bloclistener)
     - [`BlocConsumer`](#blocconsumer)
 - [How? 💻](#how-)
@@ -486,7 +486,7 @@ BlocProvider.of<PetsBloc>(context)
 ```
 
 
-### Making UI *react* to Bloc state changes with `BlocBuilder`
+### Updating the UI following Bloc state changes with `BlocBuilder`
 
 **`BlocBuilder`** is a widget that helps us
 rebuild the UI based on `bloc` state changes.
@@ -640,16 +640,16 @@ you will see the following screen.
     <img width="250" alt="cubit-diagram" src="https://user-images.githubusercontent.com/17494745/223190180-c47dc5fa-b237-47c7-95f9-b28278021a3f.png">
 </p>
 
-> **Note**
->
-> If you are having trouble 
+> **Note**: If you are having trouble 
 > debugging the `Flutter` project, 
-> check the following links:
+> follow the instructions
+> to run on a **real device**, 
+> see: 
+> [dwyl/flutter-stopwatch-tutorial#running-on-a-real-device]https://github.com/dwyl/flutter-stopwatch-tutorial#running-on-a-real-device
 > 
-> - to run on a **real device**, 
-> check https://github.com/dwyl/flutter-stopwatch-tutorial#running-on-a-real-device.
-> 
-> - to run on a **emulator**, visit https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
+> - to run on a **emulator**, 
+> read:  
+>[dwyl/learn-flutter#0-setting-up-a-new-project](https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project)
 
 
 Now we are ready 
