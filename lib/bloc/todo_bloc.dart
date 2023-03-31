@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -41,7 +41,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
     // Check if list is loaded
     if (state is TodoListLoadedState) {
-      List<TodoItem> items = state.items;
+      List<Item> items = state.items;
       items.removeWhere((element) => element.id == event.todoObj.id);
 
       emit(TodoListLoadedState(items: items));
@@ -54,16 +54,18 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
     // Check if list is loaded
     if (state is TodoListLoadedState) {
-
       // You have to create a new object because the items list needs to be new so Bloc knows it needs to re-render
       // https://stackoverflow.com/questions/65379743/flutter-bloc-cant-update-my-list-of-boolean
-      List<TodoItem> items = List.from(state.items);
-      int indexToChange = items.indexWhere((element) => element.id == event.todoObj.id);
+      List<Item> items = List.from(state.items);
+      int indexToChange =
+          items.indexWhere((element) => element.id == event.todoObj.id);
 
       // If the element is found, we create a copy of the element with the `completed` field toggled.
       if (indexToChange != -1) {
-        TodoItem itemToChange = items[indexToChange];
-        TodoItem updatedItem = TodoItem(description: itemToChange.description, completed: !itemToChange.completed);
+        Item itemToChange = items[indexToChange];
+        Item updatedItem = Item(
+            description: itemToChange.description,
+            completed: !itemToChange.completed);
 
         items[indexToChange] = updatedItem;
       }

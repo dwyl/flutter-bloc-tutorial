@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
 import 'package:todo/stopwatch.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 import 'package:todo/utils.dart';
 
 // Keys used for testing
@@ -229,7 +229,7 @@ class NavigationBar extends StatelessWidget with PreferredSizeWidget {
 
 // Widget that controls the item card
 class ItemCard extends StatefulWidget {
-  final TodoItem item;
+  final Item item;
 
   const ItemCard({required this.item, super.key});
 
@@ -238,8 +238,8 @@ class ItemCard extends StatefulWidget {
 }
 
 class _ItemCardState extends State<ItemCard> {
-  // Stopwatch to be displayed
-  late StopwatchEx _stopwatch;
+  // Timer to be displayed
+  late TimerEx _stopwatch;
 
   // Used to re-render the text showing the timer
   late Timer _timer;
@@ -249,7 +249,7 @@ class _ItemCardState extends State<ItemCard> {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch = TimerEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
@@ -330,11 +330,14 @@ class _ItemCardState extends State<ItemCard> {
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
+                      backgroundColor:
+                          _stopwatch.isRunning ? Colors.red : Colors.green,
                       elevation: 0,
                     ),
                     onPressed: handleButtonClick,
-                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
+                    child: _stopwatch.isRunning
+                        ? const Text("Stop")
+                        : const Text("Start"),
                   ),
                 Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
               ],

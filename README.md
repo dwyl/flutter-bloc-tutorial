@@ -6,11 +6,11 @@
 
 
 
-Learn
-**`Block`**
-for **Flutter**
-to better manage your
-app's state.
+Learn how to use
+**`Bloc`**
+in **`Flutter`**
+to manage your
+App's state.
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/dwyl/flutter-bloc-tutorial/ci.yml?label=build&style=flat-square&branch=main)
 [![codecov.io](https://img.shields.io/codecov/c/github/dwyl/flutter-bloc-tutorial/main.svg?style=flat-square)](https://codecov.io/github/dwyl/flutter-bloc-tutorial?branch=main)
@@ -36,15 +36,15 @@ Use these links to skip straight to the section that interests you:
     - [`Bloc` Events](#bloc-events)
     - [`Bloc` State](#bloc-state)
     - [Dependency injection with `BlocProvider`](#dependency-injection-with-blocprovider)
-    - [Making UI *react* to Bloc state changes with `BlocBuilder`](#making-ui-react-to-bloc-state-changes-with-blocbuilder)
+    - [Updating the UI following Bloc state changes with `BlocBuilder`](#updating-the-ui-following-bloc-state-changes-with-blocbuilder)
     - [Listening to state changes with `BlocListener`](#listening-to-state-changes-with-bloclistener)
     - [`BlocConsumer`](#blocconsumer)
 - [How? 💻](#how-)
   - [Before You Start! 💡](#before-you-start-)
   - [0. Create a new `Flutter` project](#0-create-a-new-flutter-project)
-  - [1. `Stopwatch` and `TodoItem` classes](#1-stopwatch-and-todoitem-classes)
-    - [1.1 `TodoItem` class](#11-todoitem-class)
-    - [1.2 `Stopwatch` class](#12-stopwatch-class)
+  - [1. `Timer` and `Item` classes](#1-timer-and-item-classes)
+    - [1.1 `Item` class](#11-item-class)
+    - [1.2 `Timer` class](#12-timer-class)
   - [2. Basic app layout](#2-basic-app-layout)
     - [2.1 Adding widget tests](#21-adding-widget-tests)
     - [2.2 Creating widgets](#22-creating-widgets)
@@ -57,7 +57,7 @@ Use these links to skip straight to the section that interests you:
       - [3.2.4 Run the tests!](#324-run-the-tests)
   - [4. Changing widgets to listen to state changes](#4-changing-widgets-to-listen-to-state-changes)
     - [4.1 Providing our `TodoBloc` to the whole app](#41-providing-our-todobloc-to-the-whole-app)
-    - [4.2 Creating and listing `TodoItem` widgets](#42-creating-and-listing-todoitem-widgets)
+    - [4.2 Creating and listing `Item` widgets](#42-creating-and-listing-item-widgets)
     - [4.3 Toggling and start/stopping timers in `ItemCard`](#43-toggling-and-startstopping-timers-in-itemcard)
       - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
       - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
@@ -78,7 +78,7 @@ Use these links to skip straight to the section that interests you:
 This tutorial assumes you have prior basic knowledge of `Flutter`.
 If this is your first time using `Flutter`,
 please visit [`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
-first to learn the basics. 
+_first_ to learn the basics. 
 
 After that, 
 we *highly recommend* you
@@ -108,7 +108,7 @@ that **is needed across many widgets of the app**.
 This shared state is called **application state**,
 and pertains to the state of the whole app.
 An example of these are shopping carts in an 
-e-commerce app or user preferences.
+e-commerce app or personal preferences.
 
 Consider the following gif, taken directly from the Flutter docs -> https://docs.flutter.dev/development/data-and-backend/state-mgmt/intro
 
@@ -126,13 +126,15 @@ This is an example of shared state.
 In the Flutter ecosystem, 
 there are a few frameworks that you can choose
 that will help you setup 
-and *utilize* shared state in your application
+and *use* shared state in your application
 and do the heavy lifting for you.
 Examples include
 [Riverpod](https://riverpod.dev/),
 [Provider](https://pub.dev/packages/provider)
 and [**Bloc**](https://bloclibrary.dev/#/).
-The latter will be the focus of this tutorial.
+Bloc is the newest of the options
+and is built by people who previously used 
+the other options on larger `Flutter` Apps.
 
 ## Do I actually need this?
 
@@ -141,7 +143,7 @@ For simple apps,
 adding the `bloc` library 
 and having your code follow an opinionated format
 will probably incur more boilerplate 
-and technical debt than is actually needed.
+and learning curve than is actually needed.
 
 Yes, the `bloc` library also has **`cubits`** 
 (we will discuss this later on this document),
@@ -168,11 +170,12 @@ when these libraries have a few distinctions:
 and makes lifting state up and down the widget tree
 much more convenient. 
 This process can effectively be used as shared state between widgets.
+
 - `Bloc` os focussed on making state management 
 as safe and predictable as possible.
 You can find some comments from the creator
-of the `flutter_bloc` library in 
-https://www.reddit.com/r/FlutterDev/comments/bmrvey/comment/en1kefb/?utm_source=share&utm_medium=web2x&context=3.
+of the `flutter_bloc` library in:
+[reddit.com/r/FlutterDev/comments/bmrvey](https://www.reddit.com/r/FlutterDev/comments/bmrvey/comment/en1kefb/?utm_source=share&utm_medium=web2x&context=3)
 
 While this app might be "too simple for `Bloc`",
 it's meant to showcase on how one implements it
@@ -180,10 +183,11 @@ in a `Flutter` app.
 
 # What? 🤷‍♂️
 
-`BLoC` is actually an acronym for 
+`BLoC` is an acronym for
 **B**usiness **L**ogic **C**omponents,
-and is effectively a design pattern created by Google
-that *separates* business logic from the presentation layer.
+and is a **design pattern** created by **`Google`**
+that *separates* business logic 
+from the presentation layer.
 
 From this concept arose [`Bloc`](https://bloclibrary.dev/#/),
 a state management library created by 
@@ -195,9 +199,9 @@ For every interaction that is made in the application,
 **state should emerge from it**. 
 For example, when you make an API call,
 the app should show a loading animation (**loading state**).
-When the internet is disabled,
-a notification could be shown to the user
-stating there is no internet connection.
+When the internet required but not available,
+this should be reflected in the interface
+so the `person` knows they have reduced functionality.
 
 There are a few benefits for using `Bloc`:
 - the logic is *kept out of the widgets*.
@@ -253,9 +257,10 @@ Quoting `Bloc`'s docs:
 > A `Bloc` is a more advanced class 
 > which relies on `events` to trigger `state` changes rather than functions. 
 > `Bloc` also extends `BlocBase`,
-> which means it has a similar public API as `Cubit`. 
+> meaning it has a similar public API to `Cubit`. 
 > However, rather than calling a `function` on a `Bloc` 
-> and directly emitting a new `state`, `Blocs` receive `events` 
+> and directly emitting a new `state`, 
+> `Blocs` receive `events` 
 > and convert the incoming `events` into outgoing `states`.
 
 Phew, that was a mouthful!
@@ -263,7 +268,8 @@ Let's break that down.
 
 <img width="1144" alt="bloc-diagram" src="https://user-images.githubusercontent.com/17494745/223118425-a8a86010-82d9-4c1e-8fde-41025d5ae88b.png">
 
-> credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
+> Image credit: 
+> [youtube.com/BradCypert](https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert)
 
 We define `Events` for a given class
 that we want to manage. 
@@ -284,21 +290,22 @@ Afterwards, the `bloc` **emits a `state`**.
 
 ### [Cubit](https://bloclibrary.dev/#/coreconcepts?id=cubit) 
 
-A `Cubit` is a **much simpler, minimalistic version of a `Bloc`**.
+A `Cubit` is a **much simpler, minimalist version of a `Bloc`**.
 Unlike `Bloc`,
 the `Cubit` exposes functions that can be invoked
 to trigger state changes.
 
-Check the following diagram.
+Check the following diagram:
 
 <img width="1127" alt="cubit-diagram" src="https://user-images.githubusercontent.com/17494745/223120206-dee22295-94f4-472a-803d-45ca9f3cab45.png">
 
-> credits of the image go to https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert.
+> Image credit: 
+> [youtube.com/BradCypert](https://www.youtube.com/watch?v=sAz_8pRIf5E&ab_channel=BradCypert)
 
 `Cubits`, 
 although similar,
 differ from `Blocs` because
-**they don't have events**.
+**they don't have `events`**.
 The `Cubit` has *methods*,
 there is no need to pass instances of `events`
 like we do in `Blocs`.
@@ -321,7 +328,7 @@ As always, the answer is... **it depends**.
 | **Advanced Event Transformations** |    | EventTransformer                   |
 
 `Cubit` shines with its simplicity
-and it's better suited for simple use cases.
+and is better suited for simple use cases.
 If your team is struggling to model event transitions,
 you might want to start with `Cubits`.
 
@@ -335,10 +342,10 @@ You can always refactor the code later on
 to a `Bloc` when you have a clearer idea
 of the possible events of your application.
 
-If you want to see a more in-depth
+For an in-depth
 comparison between the two, 
-please visit
-https://bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc.
+please see:
+[bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc](https://bloclibrary.dev/#/coreconcepts?id=cubit-vs-bloc)
 
 
 ## `BLoC` concepts in Flutter 🦋
@@ -487,7 +494,7 @@ BlocProvider.of<PetsBloc>(context)
 ```
 
 
-### Making UI *react* to Bloc state changes with `BlocBuilder`
+### Updating the UI following Bloc state changes with `BlocBuilder`
 
 **`BlocBuilder`** is a widget that helps us
 rebuild the UI based on `bloc` state changes.
@@ -641,34 +648,34 @@ you will see the following screen.
     <img width="250" alt="cubit-diagram" src="https://user-images.githubusercontent.com/17494745/223190180-c47dc5fa-b237-47c7-95f9-b28278021a3f.png">
 </p>
 
-> **Note**
->
-> If you are having trouble 
+> **Note**: If you are having trouble 
 > debugging the `Flutter` project, 
-> check the following links:
+> follow the instructions
+> to run on a **real device**, 
+> see: 
+> [dwyl/flutter-stopwatch-tutorial#running-on-a-real-device]https://github.com/dwyl/flutter-stopwatch-tutorial#running-on-a-real-device
 > 
-> - to run on a **real device**, 
-> check https://github.com/dwyl/flutter-stopwatch-tutorial#running-on-a-real-device.
-> 
-> - to run on a **emulator**, visit https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project.
+> - to run on a **emulator**, 
+> read:  
+>[dwyl/learn-flutter#0-setting-up-a-new-project](https://github.com/dwyl/learn-flutter#0-setting-up-a-new-project)
 
 
 Now we are ready 
 to start to implement our project
 with `Bloc`!
 
-## 1. `Stopwatch` and `TodoItem` classes
+## 1. `Timer` and `Item` classes
 
 Before starting to implement any widgets,
 there are two classes that 
 are going to be needed 
 to fulfil our app requirements.
 
-Let's start with our `TodoItem` class.
+Let's start with our `Item` class.
 
-### 1.1 `TodoItem` class 
+### 1.1 `Item` class 
 
-The `TodoItem` class
+The `Item` class
 will hold all the information pertaining to the person.
 We know that the class will have:
 - a **description**.
@@ -696,50 +703,50 @@ and write the next two tests in it.
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 void main() {
   test('Cumulative duration after starting and stopping timer should be more than 0', () {
     const description = "description";
 
-    final todoItem = TodoItem(description: description);
+    final item = Item(description: description);
 
     // Checking attributes
-    expect(todoItem.description, description);
+    expect(item.description, description);
 
     // Start and stop timer
-    todoItem.startTimer();
+    item.startTimer();
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Start and stop timer another time
-    todoItem.startTimer();
+    item.startTimer();
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Some time must have passed
-    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+    expect(item.getCumulativeDuration(), isNot(equals(0)));
   });
 
   test('Start timer multiple times and stopping timer will not error out', () {
     const description = "description";
 
-    final todoItem = TodoItem(description: description);
+    final item = Item(description: description);
 
     // Checking attributes
-    expect(todoItem.description, description);
+    expect(item.description, description);
 
     // Start timers three times
-    todoItem.startTimer();
-    todoItem.startTimer();
-    todoItem.startTimer();
+    item.startTimer();
+    item.startTimer();
+    item.startTimer();
 
     // Stop timer after half a second
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Some time must have passed
-    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+    expect(item.getCumulativeDuration(), isNot(equals(0)));
   });
 }
 ```
@@ -747,8 +754,8 @@ void main() {
 We are creating two tests scenarios.
 
 In the first, 
-we create a `TodoItem`
-with a specific `description` and `id`.
+we create an `Item`
+with a `description` and `id`.
 We check if these properties
 exist within the class instance.
 We then start the timer,
@@ -773,7 +780,7 @@ Firstly,
 we need a way to create `id`s
 on the go.
 Usually you'd associate the `id` 
-of a `TodoItem` class
+of an `Item` class
 with the `id` from the database.
 However, 
 since we are doing everything locally,
@@ -796,24 +803,24 @@ And run `flutter pub get`.
 This will install the dependency.
 
 After this, 
-create a file in `lib/todo.dart`
+create a file in `lib/item.dart`
 and paste the following contents.
 
 ```dart
 import 'package:uuid/uuid.dart';
 
-// Uuid to generate Ids for the todos
+// Uuid to generate Ids for the Items
 Uuid uuid = const Uuid();
 
-/// Todo class.
-/// Each `Todo` has an `id`, `description` and `completed` boolean field.
-class TodoItem {
+/// Item class.
+/// Each `Item` has an `id`, `description` and `completed` boolean field.
+class Item {
   final String id = uuid.v4();
   final String description;
   final bool completed;
   final List<ItemTimer> _timersList = [];
 
-  TodoItem({
+  Item({
     required this.description,
     this.completed = false,
   });
@@ -871,9 +878,8 @@ class ItemTimer {
 ```
 
 Let's break this down!
-In our `TodoItem` class 
-we have the four properties 
-we've aforementioned. 
+In the `Item` class 
+there are four properties.
 When instantiating this class,
 we use the `uuid` package
 to create the `id`.
@@ -921,9 +927,9 @@ all pertaining to the `widget_test.dart` file.
 This is normal, as we haven't had the opportunity to implement these features.
 We will do that later!
 
-### 1.2 `Stopwatch` class
+### 1.2 `Timer` class
 
-Now let's focus on the `Stopwatch` class.
+Now let's focus on the `Timer` class.
 
 We want each todo item to have
 **timers** that the person 
@@ -942,7 +948,7 @@ the current ongoing time
 and if the `timer` is ongoing or not.
 
 For this,
-we *can* use the [`Stopwatch`](https://api.flutter.dev/flutter/dart-core/Stopwatch-class.html)
+we *can* use the [`Timer`](https://api.flutter.dev/flutter/dart-core/Stopwatch-class.html)
 class provided by `Flutter` 
 for this.
 However, 
@@ -955,7 +961,7 @@ This is *not possible* with the base class.
 With this in mind,
 we need to *extend* this class to have this capability.
 We are going to be using a simplified version
-of the `Stopwatch` extension class 
+of the `Timer` extension class 
 that was implemented in 
 [`dwyl/flutter-stopwatch-tutorial`](https://github.com/dwyl/flutter-stopwatch-tutorial#persisting-between-sessions-and-extending-stopwatch-capabilities).
 
@@ -964,12 +970,12 @@ Create the file
 and paste the following code.
 
 ```dart
-class StopwatchEx {
-  final Stopwatch _stopWatch = Stopwatch();
+class TimerEx {
+  final Timer _stopWatch = Timer();
 
   final Duration _initialOffset;
 
-  StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
+  TimerEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
 
   start() => _stopWatch.start();
 
@@ -982,8 +988,8 @@ class StopwatchEx {
 ```
 
 As you can see,
-the `Stopwatch` class is wrapped
-in our `StopwatchEx`.
+the `Timer` class is wrapped
+in our `TimerEx`.
 It basically allows us to have an 
 initial offset on the `stopwatch` object.
 This will make it possible to 
@@ -1028,16 +1034,16 @@ and a
 to show how many incomplete todo items are left.
 - when the person inputs the text
 and presses `Done` on the keyboard,
-a new `TodoItem` widget should be shown.
+a new `Item` widget should be shown.
 - when the person clicks on the 
-`TodoItem` widget,
+`Item` widget,
 it should toggle between a
 "completed" or "not completed" state.
-- each `TodoItem` widget should have a 
+- each `Item` widget should have a 
 `Timer` [`Button`](https://api.flutter.dev/flutter/material/ElevatedButton-class.html)
 that can be pressed
 to start/stop the timer.
-- the current time spent on each `TodoItem`
+- the current time spent on each `Item`
 should be shown below the button
 and start when the person presses the "Start" button
 and stop when the person presses the "Stop" button.
@@ -1243,15 +1249,15 @@ class _MainAppState extends State<MainApp> {
           padding: EdgeInsets.only(bottom: 16.0),
           child: Text('X items left', style: TextStyle(fontSize: 20)),
         ),
-        const TodoItem(),
-        const TodoItem(),
+        const Item(),
+        const Item(),
       ],
     )));
   }
 }
 
-class TodoItem extends StatelessWidget {
-  const TodoItem({super.key});
+class Item extends StatelessWidget {
+  const Item({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1302,9 +1308,9 @@ consists of three main elements:
 - the `Textfield` where the person will input text
 and create a new todo item.
 - a `Text` with the string `"X items left"`.
-- a list of `TodoItem` widgets.
+- a list of `Item` widgets.
 
-Each `TodoItem` widget
+Each `Item` widget
 is a stateless widget 
 that uses the 
 [`Material`](https://api.flutter.dev/flutter/material/Material-class.html)
@@ -1443,7 +1449,7 @@ and paste the following piece of code.
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo/bloc/todo_bloc.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 
 void main() {
@@ -1455,21 +1461,21 @@ void main() {
     });
 
     group('AddTodoEvent', () {
-      final item = TodoItem(description: "description");
+      final item = Item(description: "description");
       test('supports value comparison', () {
         expect(AddTodoEvent(item), AddTodoEvent(item));
       });
     });
 
     group('RemoveTodoEvent', () {
-      final item = TodoItem(description: "description");
+      final item = Item(description: "description");
       test('supports value comparison', () {
         expect(RemoveTodoEvent(item), RemoveTodoEvent(item));
       });
     });
 
     group('ToggleTodoEvent', () {
-      final item = TodoItem(description: "description");
+      final item = Item(description: "description");
       test('supports value comparison', () {
         expect(ToggleTodoEvent(item), ToggleTodoEvent(item));
       });
@@ -1513,12 +1519,12 @@ inside `test/bloc/` and add the code:
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo/bloc/todo_bloc.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 void main() {
   group('TodoBloc', () {
     // List of items to mock
-    TodoItem newTodoItem = TodoItem(description: "todo description");
+    Item newItem = Item(description: "todo description");
 
     blocTest(
       'emits [] when nothing is added',
@@ -1530,11 +1536,11 @@ void main() {
       'emits [TodoListLoadedState] when AddTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        bloc.add(AddTodoEvent(newTodoItem));
+        bloc.add(AddTodoEvent(newItem));
       },
       expect: () => <TodoState>[
         const TodoListLoadedState(items: []), // when the todo bloc was loaded
-        TodoListLoadedState(items: [newTodoItem]) // when the todo bloc was added an event
+        TodoListLoadedState(items: [newItem]) // when the todo bloc was added an event
       ],
     );
 
@@ -1542,10 +1548,10 @@ void main() {
       'emits [TodoListLoadedState] when RemoveTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        TodoItem newTodoItem = TodoItem(description: "todo description");
+        Item newItem = Item(description: "todo description");
         bloc
-          ..add(AddTodoEvent(newTodoItem))
-          ..add(RemoveTodoEvent(newTodoItem)); // add and remove
+          ..add(AddTodoEvent(newItem))
+          ..add(RemoveTodoEvent(newItem)); // add and remove
       },
       expect: () => <TodoState>[const TodoListLoadedState(items: []), const TodoListLoadedState(items: [])],
     );
@@ -1554,10 +1560,10 @@ void main() {
       'emits [TodoListLoadedState] when ToggleTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        TodoItem newTodoItem = TodoItem(description: "todo description");
+        Item newItem = Item(description: "todo description");
         bloc
-          ..add(AddTodoEvent(newTodoItem))
-          ..add(ToggleTodoEvent(newTodoItem));
+          ..add(AddTodoEvent(newItem))
+          ..add(ToggleTodoEvent(newItem));
       },
       expect: () => [
         isA<TodoListLoadedState>(),
@@ -1618,7 +1624,7 @@ class TodoInitialState extends TodoState {
 
 // TodoBloc state when the todo item list is loaded
 class TodoListLoadedState extends TodoState {
-  final List<TodoItem> items;
+  final List<Item> items;
   const TodoListLoadedState({this.items = const []});
   @override
   List<Object> get props => [items];
@@ -1667,7 +1673,7 @@ class TodoListStarted extends TodoEvent {
 
 // AddTodo event when an item is added
 class AddTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const AddTodoEvent(this.todoObj);
 
@@ -1677,7 +1683,7 @@ class AddTodoEvent extends TodoEvent {
 
 // RemoveTodo event when an item is removed
 class RemoveTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const RemoveTodoEvent(this.todoObj);
 
@@ -1687,7 +1693,7 @@ class RemoveTodoEvent extends TodoEvent {
 
 // RemoveTodo event when an item is toggled
 class ToggleTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const ToggleTodoEvent(this.todoObj);
 
@@ -1719,7 +1725,7 @@ and use the code displayed next.
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -1752,7 +1758,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     final state = this.state;
 
     if (state is TodoListLoadedState) {
-      List<TodoItem> items = state.items;
+      List<Item> items = state.items;
       items.removeWhere((element) => element.id == event.todoObj.id);
 
       emit(TodoListLoadedState(items: items));
@@ -1764,13 +1770,13 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
     if (state is TodoListLoadedState) {
 
-      List<TodoItem> items = List.from(state.items);
+      List<Item> items = List.from(state.items);
       int indexToChange = items.indexWhere((element) => element.id == event.todoObj.id);
 
       // If the element is found, we create a copy of the element with the `completed` field toggled.
       if (indexToChange != -1) {
-        TodoItem itemToChange = items[indexToChange];
-        TodoItem updatedItem = TodoItem(description: itemToChange.description, completed: !itemToChange.completed);
+        Item itemToChange = items[indexToChange];
+        Item updatedItem = Item(description: itemToChange.description, completed: !itemToChange.completed);
 
         items[indexToChange] = updatedItem;
       }
@@ -1944,7 +1950,7 @@ The `child` parameter of `BlocProvider`
 is the `HomePage` class we've just created.
 
 
-### 4.2 Creating and listing `TodoItem` widgets
+### 4.2 Creating and listing `Item` widgets
 
 Now that we've provided the `TodoBloc`
 to the widget tree,
@@ -2012,10 +2018,10 @@ we are only interested in rendering our app
 when it's in a `TodoListLoadedState` state.
 
 Here comes the fun part!
-First, change the `TodoItem` widget class
+First, change the `Item` widget class
 in `lib/main.dart`
 to `ItemCard` so it does not conflict
-with the `TodoItem` class we've implemented earlier.
+with the `Item` class we've implemented earlier.
 
 ```dart
 class ItemCard extends StatelessWidget {
@@ -2036,7 +2042,7 @@ Don't worry, we'll break it down what we've changed!
         // If the list is loaded
         if (state is TodoListLoadedState) {
           int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
-          List<TodoItem> items = state.items;
+          List<Item> items = state.items;
 
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -2051,8 +2057,8 @@ Don't worry, we'll break it down what we've changed!
                 onSubmitted: (value) {
                   if(value.isNotEmpty) {
                     // Create new item and create AddTodo event
-                    TodoItem newTodoItem = TodoItem(description: value);
-                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+                    Item newItem = Item(description: value);
+                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newItem));
 
                     // Clear textfield
                     txtFieldController.clear();
@@ -2075,7 +2081,7 @@ Don't worry, we'll break it down what we've changed!
           );
         }
 
-        // If the state of the TodoItemList is not loaded, we show error.
+        // If the state of the ItemList is not loaded, we show error.
         else {
           return const Center(child: Text("Error loading items list."));
         }
@@ -2094,7 +2100,7 @@ we get this information in the snippet of code below.
 ```dart
   if (state is TodoListLoadedState) {
     int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
-    List<TodoItem> items = state.items;
+    List<Item> items = state.items;
 
     ...
   }
@@ -2132,8 +2138,8 @@ we've changed.
 ```dart
 onSubmitted: (value) {
   // Create new item and create AddTodo event
-  TodoItem newTodoItem = TodoItem(description: value);
-  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+  Item newItem = Item(description: value);
+  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newItem));
 
   // Clear textfield
   txtFieldController.clear();
@@ -2174,7 +2180,7 @@ we are going to be converting our `ItemCard`
 from a *stateless widget* to a
 **stateful widget**.
 We need to do this because we are using
-the `StopwatchEx` to show the current timer value
+the `TimerEx` to show the current timer value
 and a [`Timer`](https://api.flutter.dev/flutter/dart-async/Timer-class.html)
 class to re-render the widget so the timer value is shown properly.
 The `ItemCard` will now receive an item.
@@ -2182,7 +2188,7 @@ The `ItemCard` will now receive an item.
 ```dart
 // Widget that controls the item card
 class ItemCard extends StatefulWidget {
-  final TodoItem item;
+  final Item item;
 
   const ItemCard({required this.item, super.key});
 
@@ -2195,7 +2201,7 @@ class _ItemCardState extends State<ItemCard> {
 }
 ```
 
-Don't forget to pass on the `TodoItem` object
+Don't forget to pass on the `Item` object
 when listing the items
 inside the `build` function
 of `_HomePageState` class!
@@ -2210,8 +2216,8 @@ to look like the following code.
 
 ```dart
 class _ItemCardState extends State<ItemCard> {
-  // Stopwatch to be displayed
-  late StopwatchEx _stopwatch;
+  // Timer to be displayed
+  late TimerEx _stopwatch;
 
   // Used to re-render the text showing the timer
   late Timer _timer;
@@ -2221,7 +2227,7 @@ class _ItemCardState extends State<ItemCard> {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch = TimerEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
@@ -2320,8 +2326,8 @@ Let's break down our changes!
 We first initialize
 `_stopwatch` and `_timer`.
 The former is a variable of the class
-`StopwatchEx`, 
-the wrapper of the `Stopwatch` class
+`TimerEx`, 
+the wrapper of the `Timer` class
 we created earlier. 
 This will be used to show the value of the timer.
 On the other hand, 
@@ -2341,7 +2347,7 @@ we simply call `setState(() {});` to force a re-render.
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch = TimerEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
@@ -2416,7 +2422,7 @@ every time the button is pressed.
 In this function,
 depending on whether the timer is running or not,
 we call the `stopTimer()` or `startTimer()`
-functions of the `TodoItem` class.
+functions of the `Item` class.
 
 
 #### 4.3.2 Toggling the `ItemCard` 

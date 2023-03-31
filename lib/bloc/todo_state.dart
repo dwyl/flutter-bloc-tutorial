@@ -4,7 +4,6 @@ abstract class TodoState extends Equatable {
   const TodoState();
 }
 
-
 // Initial TodoBloc state
 class TodoInitialState extends TodoState {
   @override
@@ -13,7 +12,7 @@ class TodoInitialState extends TodoState {
 
 // TodoBloc state when the todo item list is loaded
 class TodoListLoadedState extends TodoState {
-  final List<TodoItem> items;
+  final List<Item> items;
   const TodoListLoadedState({this.items = const []});
   @override
   List<Object> get props => [items];

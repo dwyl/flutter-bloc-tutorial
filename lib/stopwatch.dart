@@ -1,11 +1,12 @@
-// Stopwatch wrapper that allows timer to be restarted
+// Timer wrapper that allows timer to be restarted
 // Check https://github.com/dwyl/flutter-stopwatch-tutorial#persisting-between-sessions-and-extending-stopwatch-capabilities.
-class StopwatchEx {
+class TimerEx {
   final Stopwatch _stopWatch = Stopwatch();
 
   final Duration _initialOffset;
 
-  StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
+  TimerEx({Duration initialOffset = Duration.zero})
+      : _initialOffset = initialOffset;
 
   start() => _stopWatch.start();
 
@@ -13,5 +14,6 @@ class StopwatchEx {
 
   bool get isRunning => _stopWatch.isRunning;
 
-  int get elapsedMilliseconds => _stopWatch.elapsedMilliseconds + _initialOffset.inMilliseconds;
+  int get elapsedMilliseconds =>
+      _stopWatch.elapsedMilliseconds + _initialOffset.inMilliseconds;
 }
