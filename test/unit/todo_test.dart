@@ -1,49 +1,51 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 void main() {
-  test('Cumulative duration after starting and stopping timer should be more than 0', () {
+  test(
+      'Cumulative duration after starting and stopping timer should be more than 0',
+      () {
     const description = "description";
 
-    final todoItem = TodoItem(description: description);
+    final item = Item(description: description);
 
     // Checking attributes
-    expect(todoItem.description, description);
+    expect(item.description, description);
 
     // Start and stop timer
-    todoItem.startTimer();
+    item.startTimer();
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Start and stop timer another time
-    todoItem.startTimer();
+    item.startTimer();
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Some time must have passed
-    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+    expect(item.getCumulativeDuration(), isNot(equals(0)));
   });
 
   test('Start timer multiple times and stopping timer will not error out', () {
     const description = "description";
 
-    final todoItem = TodoItem(description: description);
+    final item = Item(description: description);
 
     // Checking attributes
-    expect(todoItem.description, description);
+    expect(item.description, description);
 
     // Start timers three times
-    todoItem.startTimer();
-    todoItem.startTimer();
-    todoItem.startTimer();
+    item.startTimer();
+    item.startTimer();
+    item.startTimer();
 
     // Stop timer after half a second
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Some time must have passed
-    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+    expect(item.getCumulativeDuration(), isNot(equals(0)));
   });
 }

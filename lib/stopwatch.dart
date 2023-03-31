@@ -5,7 +5,8 @@ class StopwatchEx {
 
   final Duration _initialOffset;
 
-  StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
+  StopwatchEx({Duration initialOffset = Duration.zero})
+      : _initialOffset = initialOffset;
 
   start() => _stopWatch.start();
 
@@ -13,5 +14,6 @@ class StopwatchEx {
 
   bool get isRunning => _stopWatch.isRunning;
 
-  int get elapsedMilliseconds => _stopWatch.elapsedMilliseconds + _initialOffset.inMilliseconds;
+  int get elapsedMilliseconds =>
+      _stopWatch.elapsedMilliseconds + _initialOffset.inMilliseconds;
 }

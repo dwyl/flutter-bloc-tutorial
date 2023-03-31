@@ -5,13 +5,13 @@ Uuid uuid = const Uuid();
 
 /// Todo class.
 /// Each `Todo` has an `id`, `description` and `completed` boolean field.
-class TodoItem {
+class Item {
   final String id = uuid.v4();
   final String description;
   final bool completed;
   final List<ItemTimer> _timersList = [];
 
-  TodoItem({
+  Item({
     required this.description,
     this.completed = false,
   });

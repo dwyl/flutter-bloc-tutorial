@@ -42,8 +42,8 @@ Use these links to skip straight to the section that interests you:
 - [How? 💻](#how-)
   - [Before You Start! 💡](#before-you-start-)
   - [0. Create a new `Flutter` project](#0-create-a-new-flutter-project)
-  - [1. `Stopwatch` and `TodoItem` classes](#1-stopwatch-and-todoitem-classes)
-    - [1.1 `TodoItem` class](#11-todoitem-class)
+  - [1. `Stopwatch` and `Item` classes](#1-stopwatch-and-item-classes)
+    - [1.1 `Item` class](#11-item-class)
     - [1.2 `Stopwatch` class](#12-stopwatch-class)
   - [2. Basic app layout](#2-basic-app-layout)
     - [2.1 Adding widget tests](#21-adding-widget-tests)
@@ -57,7 +57,7 @@ Use these links to skip straight to the section that interests you:
       - [3.2.4 Run the tests!](#324-run-the-tests)
   - [4. Changing widgets to listen to state changes](#4-changing-widgets-to-listen-to-state-changes)
     - [4.1 Providing our `TodoBloc` to the whole app](#41-providing-our-todobloc-to-the-whole-app)
-    - [4.2 Creating and listing `TodoItem` widgets](#42-creating-and-listing-todoitem-widgets)
+    - [4.2 Creating and listing `Item` widgets](#42-creating-and-listing-item-widgets)
     - [4.3 Toggling and start/stopping timers in `ItemCard`](#43-toggling-and-startstopping-timers-in-itemcard)
       - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
       - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
@@ -656,18 +656,18 @@ Now we are ready
 to start to implement our project
 with `Bloc`!
 
-## 1. `Stopwatch` and `TodoItem` classes
+## 1. `Stopwatch` and `Item` classes
 
 Before starting to implement any widgets,
 there are two classes that 
 are going to be needed 
 to fulfil our app requirements.
 
-Let's start with our `TodoItem` class.
+Let's start with our `Item` class.
 
-### 1.1 `TodoItem` class 
+### 1.1 `Item` class 
 
-The `TodoItem` class
+The `Item` class
 will hold all the information pertaining to the person.
 We know that the class will have:
 - a **description**.
@@ -695,50 +695,50 @@ and write the next two tests in it.
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 void main() {
   test('Cumulative duration after starting and stopping timer should be more than 0', () {
     const description = "description";
 
-    final todoItem = TodoItem(description: description);
+    final item = Item(description: description);
 
     // Checking attributes
-    expect(todoItem.description, description);
+    expect(item.description, description);
 
     // Start and stop timer
-    todoItem.startTimer();
+    item.startTimer();
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Start and stop timer another time
-    todoItem.startTimer();
+    item.startTimer();
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Some time must have passed
-    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+    expect(item.getCumulativeDuration(), isNot(equals(0)));
   });
 
   test('Start timer multiple times and stopping timer will not error out', () {
     const description = "description";
 
-    final todoItem = TodoItem(description: description);
+    final item = Item(description: description);
 
     // Checking attributes
-    expect(todoItem.description, description);
+    expect(item.description, description);
 
     // Start timers three times
-    todoItem.startTimer();
-    todoItem.startTimer();
-    todoItem.startTimer();
+    item.startTimer();
+    item.startTimer();
+    item.startTimer();
 
     // Stop timer after half a second
     sleep(const Duration(milliseconds: 500));
-    todoItem.stopTimer();
+    item.stopTimer();
 
     // Some time must have passed
-    expect(todoItem.getCumulativeDuration(), isNot(equals(0)));
+    expect(item.getCumulativeDuration(), isNot(equals(0)));
   });
 }
 ```
@@ -746,8 +746,8 @@ void main() {
 We are creating two tests scenarios.
 
 In the first, 
-we create a `TodoItem`
-with a specific `description` and `id`.
+we create an `Item`
+with a `description` and `id`.
 We check if these properties
 exist within the class instance.
 We then start the timer,
@@ -772,7 +772,7 @@ Firstly,
 we need a way to create `id`s
 on the go.
 Usually you'd associate the `id` 
-of a `TodoItem` class
+of an `Item` class
 with the `id` from the database.
 However, 
 since we are doing everything locally,
@@ -795,24 +795,24 @@ And run `flutter pub get`.
 This will install the dependency.
 
 After this, 
-create a file in `lib/todo.dart`
+create a file in `lib/item.dart`
 and paste the following contents.
 
 ```dart
 import 'package:uuid/uuid.dart';
 
-// Uuid to generate Ids for the todos
+// Uuid to generate Ids for the Items
 Uuid uuid = const Uuid();
 
-/// Todo class.
-/// Each `Todo` has an `id`, `description` and `completed` boolean field.
-class TodoItem {
+/// Item class.
+/// Each `Item` has an `id`, `description` and `completed` boolean field.
+class Item {
   final String id = uuid.v4();
   final String description;
   final bool completed;
   final List<ItemTimer> _timersList = [];
 
-  TodoItem({
+  Item({
     required this.description,
     this.completed = false,
   });
@@ -870,9 +870,8 @@ class ItemTimer {
 ```
 
 Let's break this down!
-In our `TodoItem` class 
-we have the four properties 
-we've aforementioned. 
+In the `Item` class 
+there are four properties.
 When instantiating this class,
 we use the `uuid` package
 to create the `id`.
@@ -1027,16 +1026,16 @@ and a
 to show how many incomplete todo items are left.
 - when the person inputs the text
 and presses `Done` on the keyboard,
-a new `TodoItem` widget should be shown.
+a new `Item` widget should be shown.
 - when the person clicks on the 
-`TodoItem` widget,
+`Item` widget,
 it should toggle between a
 "completed" or "not completed" state.
-- each `TodoItem` widget should have a 
+- each `Item` widget should have a 
 `Timer` [`Button`](https://api.flutter.dev/flutter/material/ElevatedButton-class.html)
 that can be pressed
 to start/stop the timer.
-- the current time spent on each `TodoItem`
+- the current time spent on each `Item`
 should be shown below the button
 and start when the person presses the "Start" button
 and stop when the person presses the "Stop" button.
@@ -1242,15 +1241,15 @@ class _MainAppState extends State<MainApp> {
           padding: EdgeInsets.only(bottom: 16.0),
           child: Text('X items left', style: TextStyle(fontSize: 20)),
         ),
-        const TodoItem(),
-        const TodoItem(),
+        const Item(),
+        const Item(),
       ],
     )));
   }
 }
 
-class TodoItem extends StatelessWidget {
-  const TodoItem({super.key});
+class Item extends StatelessWidget {
+  const Item({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1301,9 +1300,9 @@ consists of three main elements:
 - the `Textfield` where the person will input text
 and create a new todo item.
 - a `Text` with the string `"X items left"`.
-- a list of `TodoItem` widgets.
+- a list of `Item` widgets.
 
-Each `TodoItem` widget
+Each `Item` widget
 is a stateless widget 
 that uses the 
 [`Material`](https://api.flutter.dev/flutter/material/Material-class.html)
@@ -1442,7 +1441,7 @@ and paste the following piece of code.
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo/bloc/todo_bloc.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 
 void main() {
@@ -1454,21 +1453,21 @@ void main() {
     });
 
     group('AddTodoEvent', () {
-      final item = TodoItem(description: "description");
+      final item = Item(description: "description");
       test('supports value comparison', () {
         expect(AddTodoEvent(item), AddTodoEvent(item));
       });
     });
 
     group('RemoveTodoEvent', () {
-      final item = TodoItem(description: "description");
+      final item = Item(description: "description");
       test('supports value comparison', () {
         expect(RemoveTodoEvent(item), RemoveTodoEvent(item));
       });
     });
 
     group('ToggleTodoEvent', () {
-      final item = TodoItem(description: "description");
+      final item = Item(description: "description");
       test('supports value comparison', () {
         expect(ToggleTodoEvent(item), ToggleTodoEvent(item));
       });
@@ -1512,12 +1511,12 @@ inside `test/bloc/` and add the code:
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo/bloc/todo_bloc.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 void main() {
   group('TodoBloc', () {
     // List of items to mock
-    TodoItem newTodoItem = TodoItem(description: "todo description");
+    Item newItem = Item(description: "todo description");
 
     blocTest(
       'emits [] when nothing is added',
@@ -1529,11 +1528,11 @@ void main() {
       'emits [TodoListLoadedState] when AddTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        bloc.add(AddTodoEvent(newTodoItem));
+        bloc.add(AddTodoEvent(newItem));
       },
       expect: () => <TodoState>[
         const TodoListLoadedState(items: []), // when the todo bloc was loaded
-        TodoListLoadedState(items: [newTodoItem]) // when the todo bloc was added an event
+        TodoListLoadedState(items: [newItem]) // when the todo bloc was added an event
       ],
     );
 
@@ -1541,10 +1540,10 @@ void main() {
       'emits [TodoListLoadedState] when RemoveTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        TodoItem newTodoItem = TodoItem(description: "todo description");
+        Item newItem = Item(description: "todo description");
         bloc
-          ..add(AddTodoEvent(newTodoItem))
-          ..add(RemoveTodoEvent(newTodoItem)); // add and remove
+          ..add(AddTodoEvent(newItem))
+          ..add(RemoveTodoEvent(newItem)); // add and remove
       },
       expect: () => <TodoState>[const TodoListLoadedState(items: []), const TodoListLoadedState(items: [])],
     );
@@ -1553,10 +1552,10 @@ void main() {
       'emits [TodoListLoadedState] when ToggleTodoEvent is created',
       build: () => TodoBloc()..add(TodoListStarted()),
       act: (bloc) {
-        TodoItem newTodoItem = TodoItem(description: "todo description");
+        Item newItem = Item(description: "todo description");
         bloc
-          ..add(AddTodoEvent(newTodoItem))
-          ..add(ToggleTodoEvent(newTodoItem));
+          ..add(AddTodoEvent(newItem))
+          ..add(ToggleTodoEvent(newItem));
       },
       expect: () => [
         isA<TodoListLoadedState>(),
@@ -1617,7 +1616,7 @@ class TodoInitialState extends TodoState {
 
 // TodoBloc state when the todo item list is loaded
 class TodoListLoadedState extends TodoState {
-  final List<TodoItem> items;
+  final List<Item> items;
   const TodoListLoadedState({this.items = const []});
   @override
   List<Object> get props => [items];
@@ -1666,7 +1665,7 @@ class TodoListStarted extends TodoEvent {
 
 // AddTodo event when an item is added
 class AddTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const AddTodoEvent(this.todoObj);
 
@@ -1676,7 +1675,7 @@ class AddTodoEvent extends TodoEvent {
 
 // RemoveTodo event when an item is removed
 class RemoveTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const RemoveTodoEvent(this.todoObj);
 
@@ -1686,7 +1685,7 @@ class RemoveTodoEvent extends TodoEvent {
 
 // RemoveTodo event when an item is toggled
 class ToggleTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const ToggleTodoEvent(this.todoObj);
 
@@ -1718,7 +1717,7 @@ and use the code displayed next.
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -1751,7 +1750,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     final state = this.state;
 
     if (state is TodoListLoadedState) {
-      List<TodoItem> items = state.items;
+      List<Item> items = state.items;
       items.removeWhere((element) => element.id == event.todoObj.id);
 
       emit(TodoListLoadedState(items: items));
@@ -1763,13 +1762,13 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
     if (state is TodoListLoadedState) {
 
-      List<TodoItem> items = List.from(state.items);
+      List<Item> items = List.from(state.items);
       int indexToChange = items.indexWhere((element) => element.id == event.todoObj.id);
 
       // If the element is found, we create a copy of the element with the `completed` field toggled.
       if (indexToChange != -1) {
-        TodoItem itemToChange = items[indexToChange];
-        TodoItem updatedItem = TodoItem(description: itemToChange.description, completed: !itemToChange.completed);
+        Item itemToChange = items[indexToChange];
+        Item updatedItem = Item(description: itemToChange.description, completed: !itemToChange.completed);
 
         items[indexToChange] = updatedItem;
       }
@@ -1943,7 +1942,7 @@ The `child` parameter of `BlocProvider`
 is the `HomePage` class we've just created.
 
 
-### 4.2 Creating and listing `TodoItem` widgets
+### 4.2 Creating and listing `Item` widgets
 
 Now that we've provided the `TodoBloc`
 to the widget tree,
@@ -2011,10 +2010,10 @@ we are only interested in rendering our app
 when it's in a `TodoListLoadedState` state.
 
 Here comes the fun part!
-First, change the `TodoItem` widget class
+First, change the `Item` widget class
 in `lib/main.dart`
 to `ItemCard` so it does not conflict
-with the `TodoItem` class we've implemented earlier.
+with the `Item` class we've implemented earlier.
 
 ```dart
 class ItemCard extends StatelessWidget {
@@ -2035,7 +2034,7 @@ Don't worry, we'll break it down what we've changed!
         // If the list is loaded
         if (state is TodoListLoadedState) {
           int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
-          List<TodoItem> items = state.items;
+          List<Item> items = state.items;
 
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -2050,8 +2049,8 @@ Don't worry, we'll break it down what we've changed!
                 onSubmitted: (value) {
                   if(value.isNotEmpty) {
                     // Create new item and create AddTodo event
-                    TodoItem newTodoItem = TodoItem(description: value);
-                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+                    Item newItem = Item(description: value);
+                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newItem));
 
                     // Clear textfield
                     txtFieldController.clear();
@@ -2074,7 +2073,7 @@ Don't worry, we'll break it down what we've changed!
           );
         }
 
-        // If the state of the TodoItemList is not loaded, we show error.
+        // If the state of the ItemList is not loaded, we show error.
         else {
           return const Center(child: Text("Error loading items list."));
         }
@@ -2093,7 +2092,7 @@ we get this information in the snippet of code below.
 ```dart
   if (state is TodoListLoadedState) {
     int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
-    List<TodoItem> items = state.items;
+    List<Item> items = state.items;
 
     ...
   }
@@ -2131,8 +2130,8 @@ we've changed.
 ```dart
 onSubmitted: (value) {
   // Create new item and create AddTodo event
-  TodoItem newTodoItem = TodoItem(description: value);
-  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+  Item newItem = Item(description: value);
+  BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newItem));
 
   // Clear textfield
   txtFieldController.clear();
@@ -2181,7 +2180,7 @@ The `ItemCard` will now receive an item.
 ```dart
 // Widget that controls the item card
 class ItemCard extends StatefulWidget {
-  final TodoItem item;
+  final Item item;
 
   const ItemCard({required this.item, super.key});
 
@@ -2194,7 +2193,7 @@ class _ItemCardState extends State<ItemCard> {
 }
 ```
 
-Don't forget to pass on the `TodoItem` object
+Don't forget to pass on the `Item` object
 when listing the items
 inside the `build` function
 of `_HomePageState` class!
@@ -2415,7 +2414,7 @@ every time the button is pressed.
 In this function,
 depending on whether the timer is running or not,
 we call the `stopTimer()` or `startTimer()`
-functions of the `TodoItem` class.
+functions of the `Item` class.
 
 
 #### 4.3.2 Toggling the `ItemCard` 

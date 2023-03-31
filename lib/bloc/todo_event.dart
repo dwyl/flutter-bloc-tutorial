@@ -12,7 +12,7 @@ class TodoListStarted extends TodoEvent {
 
 // AddTodo event when an item is added
 class AddTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const AddTodoEvent(this.todoObj);
 
@@ -22,7 +22,7 @@ class AddTodoEvent extends TodoEvent {
 
 // RemoveTodo event when an item is removed
 class RemoveTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const RemoveTodoEvent(this.todoObj);
 
@@ -32,7 +32,7 @@ class RemoveTodoEvent extends TodoEvent {
 
 // RemoveTodo event when an item is toggled
 class ToggleTodoEvent extends TodoEvent {
-  final TodoItem todoObj;
+  final Item todoObj;
 
   const ToggleTodoEvent(this.todoObj);
 

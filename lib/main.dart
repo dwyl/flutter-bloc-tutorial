@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
 import 'package:todo/stopwatch.dart';
-import 'package:todo/todo.dart';
+import 'package:todo/item.dart';
 import 'package:todo/utils.dart';
 
 // Keys used for testing
@@ -54,8 +54,9 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         // If the list is loaded
         if (state is TodoListLoadedState) {
-          int numItemsLeft = state.items.length - state.items.where((element) => element.completed).length;
-          List<TodoItem> items = state.items;
+          int numItemsLeft = state.items.length -
+              state.items.where((element) => element.completed).length;
+          List<Item> items = state.items;
 
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -68,10 +69,11 @@ class _HomePageState extends State<HomePage> {
                   labelText: 'What do we need to do?',
                 ),
                 onSubmitted: (value) {
-                  if(value.isNotEmpty) {
+                  if (value.isNotEmpty) {
                     // Create new item and create AddTodo event
-                    TodoItem newTodoItem = TodoItem(description: value);
-                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+                    Item newItem = Item(description: value);
+                    BlocProvider.of<TodoBloc>(context)
+                        .add(AddTodoEvent(newItem));
 
                     // Clear textfield
                     txtFieldController.clear();
@@ -84,17 +86,23 @@ class _HomePageState extends State<HomePage> {
               // Title for items left
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: Text(key: itemsLeftStringKey, '$numItemsLeft items left', style: const TextStyle(fontSize: 20)),
+                child: Text(
+                    key: itemsLeftStringKey,
+                    '$numItemsLeft items left',
+                    style: const TextStyle(fontSize: 20)),
               ),
 
               // List of items
               if (items.isNotEmpty) const Divider(height: 0),
-              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+              for (var i = 0; i < items.length; i++) ...[
+                if (i > 0) const Divider(height: 0),
+                ItemCard(item: items[i])
+              ],
             ],
           );
         }
 
-        // If the state of the TodoItemList is not loaded, we show error.
+        // If the state of the ItemList is not loaded, we show error.
         else {
           return const Center(child: Text("Error loading items list."));
         }
@@ -105,7 +113,7 @@ class _HomePageState extends State<HomePage> {
 
 // Widget that controls the item card
 class ItemCard extends StatefulWidget {
-  final TodoItem item;
+  final Item item;
 
   const ItemCard({required this.item, super.key});
 
@@ -125,7 +133,8 @@ class _ItemCardState extends State<ItemCard> {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch =
+        StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
@@ -199,13 +208,17 @@ class _ItemCardState extends State<ItemCard> {
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
+                      backgroundColor:
+                          _stopwatch.isRunning ? Colors.red : Colors.green,
                       elevation: 0,
                     ),
                     onPressed: handleButtonClick,
-                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
+                    child: _stopwatch.isRunning
+                        ? const Text("Stop")
+                        : const Text("Start"),
                   ),
-                  Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
+                  Text(formatTime(_stopwatch.elapsedMilliseconds),
+                      style: const TextStyle(fontSize: 11))
                 ],
               )
             ],
