@@ -122,8 +122,8 @@ class ItemCard extends StatefulWidget {
 }
 
 class _ItemCardState extends State<ItemCard> {
-  // Stopwatch to be displayed
-  late StopwatchEx _stopwatch;
+  // Timer to be displayed
+  late TimerEx _stopwatch;
 
   // Used to re-render the text showing the timer
   late Timer _timer;
@@ -133,8 +133,7 @@ class _ItemCardState extends State<ItemCard> {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch =
-        StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch = TimerEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {

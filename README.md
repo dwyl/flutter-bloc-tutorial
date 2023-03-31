@@ -42,9 +42,9 @@ Use these links to skip straight to the section that interests you:
 - [How? 💻](#how-)
   - [Before You Start! 💡](#before-you-start-)
   - [0. Create a new `Flutter` project](#0-create-a-new-flutter-project)
-  - [1. `Stopwatch` and `Item` classes](#1-stopwatch-and-item-classes)
+  - [1. `Timer` and `Item` classes](#1-timer-and-item-classes)
     - [1.1 `Item` class](#11-item-class)
-    - [1.2 `Stopwatch` class](#12-stopwatch-class)
+    - [1.2 `Timer` class](#12-timer-class)
   - [2. Basic app layout](#2-basic-app-layout)
     - [2.1 Adding widget tests](#21-adding-widget-tests)
     - [2.2 Creating widgets](#22-creating-widgets)
@@ -656,7 +656,7 @@ Now we are ready
 to start to implement our project
 with `Bloc`!
 
-## 1. `Stopwatch` and `Item` classes
+## 1. `Timer` and `Item` classes
 
 Before starting to implement any widgets,
 there are two classes that 
@@ -919,9 +919,9 @@ all pertaining to the `widget_test.dart` file.
 This is normal, as we haven't had the opportunity to implement these features.
 We will do that later!
 
-### 1.2 `Stopwatch` class
+### 1.2 `Timer` class
 
-Now let's focus on the `Stopwatch` class.
+Now let's focus on the `Timer` class.
 
 We want each todo item to have
 **timers** that the person 
@@ -940,7 +940,7 @@ the current ongoing time
 and if the `timer` is ongoing or not.
 
 For this,
-we *can* use the [`Stopwatch`](https://api.flutter.dev/flutter/dart-core/Stopwatch-class.html)
+we *can* use the [`Timer`](https://api.flutter.dev/flutter/dart-core/Stopwatch-class.html)
 class provided by `Flutter` 
 for this.
 However, 
@@ -953,7 +953,7 @@ This is *not possible* with the base class.
 With this in mind,
 we need to *extend* this class to have this capability.
 We are going to be using a simplified version
-of the `Stopwatch` extension class 
+of the `Timer` extension class 
 that was implemented in 
 [`dwyl/flutter-stopwatch-tutorial`](https://github.com/dwyl/flutter-stopwatch-tutorial#persisting-between-sessions-and-extending-stopwatch-capabilities).
 
@@ -962,12 +962,12 @@ Create the file
 and paste the following code.
 
 ```dart
-class StopwatchEx {
-  final Stopwatch _stopWatch = Stopwatch();
+class TimerEx {
+  final Timer _stopWatch = Timer();
 
   final Duration _initialOffset;
 
-  StopwatchEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
+  TimerEx({Duration initialOffset = Duration.zero}) : _initialOffset = initialOffset;
 
   start() => _stopWatch.start();
 
@@ -980,8 +980,8 @@ class StopwatchEx {
 ```
 
 As you can see,
-the `Stopwatch` class is wrapped
-in our `StopwatchEx`.
+the `Timer` class is wrapped
+in our `TimerEx`.
 It basically allows us to have an 
 initial offset on the `stopwatch` object.
 This will make it possible to 
@@ -2172,7 +2172,7 @@ we are going to be converting our `ItemCard`
 from a *stateless widget* to a
 **stateful widget**.
 We need to do this because we are using
-the `StopwatchEx` to show the current timer value
+the `TimerEx` to show the current timer value
 and a [`Timer`](https://api.flutter.dev/flutter/dart-async/Timer-class.html)
 class to re-render the widget so the timer value is shown properly.
 The `ItemCard` will now receive an item.
@@ -2208,8 +2208,8 @@ to look like the following code.
 
 ```dart
 class _ItemCardState extends State<ItemCard> {
-  // Stopwatch to be displayed
-  late StopwatchEx _stopwatch;
+  // Timer to be displayed
+  late TimerEx _stopwatch;
 
   // Used to re-render the text showing the timer
   late Timer _timer;
@@ -2219,7 +2219,7 @@ class _ItemCardState extends State<ItemCard> {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch = TimerEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
@@ -2318,8 +2318,8 @@ Let's break down our changes!
 We first initialize
 `_stopwatch` and `_timer`.
 The former is a variable of the class
-`StopwatchEx`, 
-the wrapper of the `Stopwatch` class
+`TimerEx`, 
+the wrapper of the `Timer` class
 we created earlier. 
 This will be used to show the value of the timer.
 On the other hand, 
@@ -2339,7 +2339,7 @@ we simply call `setState(() {});` to force a re-render.
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
 
-    _stopwatch = StopwatchEx(initialOffset: widget.item.getCumulativeDuration());
+    _stopwatch = TimerEx(initialOffset: widget.item.getCumulativeDuration());
 
     // Timer to rerender the page so the text shows the seconds passing by
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
