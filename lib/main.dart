@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
               builder: (context, state) {
                 // If the list is loaded
                 if (state is TodoListLoadedState) {
-                  List<TodoItem> items = state.items;
+                  List<Item> items = state.items;
 
                   return SafeArea(
                     child: Column(
@@ -167,7 +167,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                           final value = txtFieldController.text;
                           if (value.isNotEmpty) {
                             // Create new item and create AddTodo event
-                            TodoItem newTodoItem = TodoItem(description: value);
+                            Item newTodoItem = Item(description: value);
                             BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
                             // Clear textfield
