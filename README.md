@@ -22,7 +22,7 @@ App's state.
 
 Use these links to skip straight to the section that interests you:
 
-- [A note 🗒️](#a-note-️)
+- [Quick Note 🗒️](#quick-note-️)
 - [Why? 👀](#why-)
   - [Do I actually need this?](#do-i-actually-need-this)
 - [What? 🤷‍♂️](#what-️)
@@ -62,7 +62,7 @@ Use these links to skip straight to the section that interests you:
       - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
       - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
   - [5. Run the app!](#5-run-the-app)
-  - [(Optional) 6. Give the UI a new look ✨](#optional-6-give-the-ui-a-new-look-)
+  - [6. Give the UI a new look ✨ (Optional)](#6-give-the-ui-a-new-look--optional)
     - [6.1 Refactor `ItemCard`](#61-refactor-itemcard)
     - [6.2 Refactoring the `HomePage`](#62-refactoring-the-homepage)
       - [6.2.1 Extracting `AppBar`](#621-extracting-appbar)
@@ -73,19 +73,19 @@ Use these links to skip straight to the section that interests you:
 - [I need help! ❓](#i-need-help-)
 
 
-# A note 🗒️
+# Quick Note 🗒️
 
-This tutorial assumes you have prior basic knowledge of `Flutter`.
-If this is your first time using `Flutter`,
-please visit [`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
-_first_ to learn the basics. 
+This tutorial assumes you have prior _basic_ knowledge of `Flutter`.
+If this is your _first_ time using `Flutter`,
+please visit 
+[`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
+to learn the basics. 
 
 After that, 
 we *highly recommend* you
-follow [`dwyl/flutter-todo-list-tutorial`](https://github.com/dwyl/flutter-todo-list-tutorial).
-You will find great value in it
-to guide you through implementing an app
-with shared state *without* `Bloc`.
+follow [`dwyl/**flutter-todo-list-tutorial**`](https://github.com/dwyl/flutter-todo-list-tutorial)
+because it covers building a **Todo List**
+***without*** the "advanced" state management of **`Bloc`**.
 
 # Why? 👀
 
@@ -95,7 +95,7 @@ In these widgets, the state and
 how/when it changes determines how many times
 the widget is rendered.
 The state that is contained within the widget
-is referred to as "local state".
+is referred to as "**_local_ state**".
 
 A `Flutter` app consists of 
 *multiple widgets*, 
@@ -110,14 +110,17 @@ and pertains to the state of the whole app.
 An example of these are shopping carts in an 
 e-commerce app or personal preferences.
 
-Consider the following gif, taken directly from the Flutter docs -> https://docs.flutter.dev/development/data-and-backend/state-mgmt/intro
+Consider the following `GIF`, 
+taken directly from the Flutter docs: 
+[docs.flutter.dev/development/data-and-backend/state-mgmt](https://docs.flutter.dev/development/data-and-backend/state-mgmt/intro)
 
 ![shared-state](https://user-images.githubusercontent.com/17494745/223102689-03249a71-3472-4628-b586-c87d167ad3a7.png)
 
-
-Each widget in the widget tree might have its own local state 
-but there's a piece of application state (i.e. shared state) 
-in the form of a cart. 
+Each widget in the widget tree 
+might have its own local state 
+but there's a piece of application state 
+(i.e. shared state) 
+in the form of a shopping cart. 
 This cart is accessible from any widget of the app - 
 in this case, the `MyCart` widget 
 uses it to list what item was added to it.
@@ -1238,7 +1241,7 @@ class _MainAppState extends State<MainApp> {
       children: [
         TextField(
           decoration: const InputDecoration(
-            labelText: 'What do we need to do?',
+            labelText: 'What needs to be done?',
           ),
           onSubmitted: (value) {
             print("submit new todo:$value");
@@ -2467,7 +2470,7 @@ You should see this output.
 Heck yeah! 🥳
 
 We are *successfully* leveraging `Bloc`
-to manage the list of todo items.
+to manage the `list` of todo `items`.
 These items are accessible by all the widgets
 in the widget tree.
 Every widget is able to access them
@@ -2477,7 +2480,8 @@ either by adding new elements
 or toggling items within it.
 
 
-## (Optional) 6. Give the UI a new look ✨
+## 6. Give the UI a new look ✨ (Optional) 
+
 
 We hope this tutorial was useful to you,
 because it certainly is useful to us as well!
@@ -2496,9 +2500,9 @@ as possible.
 
 As you can see, 
 the `TextField` is meant to expand
-*over* the rest of the page when focussed.
+*over* the rest of the page when focussed. <br />
 After saving,
-it should de-expand back to its normal state.
+it should contract back to its compact size.
 
 Let's start changing our app!
 
@@ -2509,13 +2513,13 @@ to the Figma wireframes as possible,
 we are going to make some changes to it.
 Mainly:
 
-- change the icons when toggled.
-- the person is only able to toggle the card
-**only** if the stopwatch is *not running*.
-- hide the timer button when the card
+- Change the icons when toggled.
+- `person` is only able to toggle the card
+when the `timer` is *not running*.
+- Hide the `timer` button when the card
 is toggled to "completed".
-- change the style of the text
-when the todo item is marked as "completed".
+- Change the style of the `text`
+when the todo `item` is marked as "completed".
 
 To make these changes, 
 open `lib/main.dart`
@@ -2825,7 +2829,8 @@ to create a sliding animation
 between pages.
 
 If you want to learn more about tweening,
-please check https://docs.flutter.dev/cookbook/animation/page-route-animation.
+please see: 
+[docs.flutter.dev/cookbook/animation/page-route-animation](https://docs.flutter.dev/cookbook/animation/page-route-animation)
 
 As you can see,
 this animation is transitioning
