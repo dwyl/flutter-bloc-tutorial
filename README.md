@@ -2799,33 +2799,28 @@ Let's implement the `navigateToNewTodoItemPage()`
 function we are using.
 
 ```dart
-
 Route navigateToNewTodoItemPage() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => const NewTodoPage(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const begin = Offset(0.0, -1.0);
-      const end = Offset.zero;
-      const curve = Curves.ease;
-
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
-    },
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
   );
 }
 ```
 
 We are using [`PageRouteBuilder`](https://api.flutter.dev/flutter/widgets/PageRouteBuilder-class.html)
-with [`SlideTransition`](https://api.flutter.dev/flutter/widgets/SlideTransition-class.html)
-to create a sliding animation
-between pages.
+for the transition between pages.
+By default, the transition between pages
+has a default animation. 
+We can remove this transition by overriding these values
+in `transitionDuration` and `reverseTransitionDuration`.
 
-If you want to learn more about tweening,
-please check https://docs.flutter.dev/cookbook/animation/page-route-animation.
+> If you are interested in adding a custom transition
+> with [`SlideTransition`](https://api.flutter.dev/flutter/widgets/SlideTransition-class.html)
+> to create a sliding animation
+> between pages
+> and learn more about tweening,
+> please check https://docs.flutter.dev/cookbook/animation/page-route-animation.
 
 As you can see,
 this animation is transitioning
