@@ -280,6 +280,9 @@ class _ItemCardState extends State<ItemCard> {
 
   @override
   Widget build(BuildContext context) {
+
+    double deviceWidth = MediaQuery.of(context).size.width;
+
     return Container(
       key: itemCardWidgetKey,
       constraints: const BoxConstraints(minHeight: 70),
@@ -323,11 +326,12 @@ class _ItemCardState extends State<ItemCard> {
                       backgroundColor:
                           _stopwatch.isRunning ? Colors.red : Colors.green,
                       elevation: 0,
+                      minimumSize: Size(deviceWidth * 0.2, 40)
                     ),
                     onPressed: handleButtonClick,
                     child: _stopwatch.isRunning
                         ? const Text("Stop")
-                        : const Text("Start"),
+                        : const Text("Start"), 
                   ),
                 Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
               ],
