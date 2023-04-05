@@ -2209,9 +2209,19 @@ when listing the items
 inside the `build` function
 of `_HomePageState` class!
 
+> **Note**
+>
+> We've added a padding in-between list items to make it prettier 😊.
+
 ```dart
 if (items.isNotEmpty) const Divider(height: 0),
-for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],        
+for (var i = 0; i < items.length; i++) ...[
+  if (i > 0) const Divider(height: 0),
+  Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: ItemCard(item: items[i]),
+  )
+],       
 ```
 
 Let's now change the `_ItemCardState`
@@ -2527,11 +2537,60 @@ and locate the `TodoItemCard` class.
 Replace `build` function
 of `_ItemCardState`
 with the following piece of code.
+Don't forget to add the added functions
+that will dynamically change the text,
+color and style of the widgets 
+according to the state of the stopwatch.
 
 ```dart
-  Widget build(BuildContext context) {
 
+
+  // Start and stop timer button handler
+  _handleButtonClick() {
+    // If timer is ongoing, we stop the stopwatch and the timer in the todo item.
+    if (_stopwatch.isRunning) {
+      widget.item.stopTimer();
+      _stopwatch.stop();
+
+      // Re-render
+      setState(() {});
+    }
+
+    // If we are to start timer, start the timer in todo item and stopwatch.
+    else {
+      widget.item.startTimer();
+      _stopwatch.start();
+
+      // Re-render
+      setState(() {});
+    }
+  }
+
+  // Set proper background to timer button according to status of stopwatch
+  _renderButtonBackground() {
+    if (_stopwatch.elapsedMilliseconds == 0) {
+      return const Color.fromARGB(255, 75, 192, 169);
+    } else {
+      return _stopwatch.isRunning ? Colors.red : Colors.green;
+    }
+  }
+
+  // Set button text according to status of stopwatch
+  _renderButtonText() {
+    if (_stopwatch.elapsedMilliseconds == 0) {
+      return "Start";
+    } else {
+      return _stopwatch.isRunning ? "Stop" : "Resume";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
+
+    double descriptionFontSize = deviceWidth * .07;
+    double stopwatchFontSize = deviceWidth * .055;
+    double buttonFontSize = deviceWidth * .05;
 
     return Container(
       key: itemCardWidgetKey,
@@ -2550,15 +2609,15 @@ with the following piece of code.
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             widget.item.completed
-                ? const Icon(
+                ? Icon(
                     Icons.check_box,
-                    color: Colors.blue,
-                    size: 18.0,
+                    color: const Color.fromARGB(255, 126, 121, 121),
+                    size: deviceWidth * 0.1,
                   )
-                : const Icon(
+                : Icon(
                     Icons.check_box_outline_blank,
-                    color: Colors.blue,
-                    size: 18.0,
+                    color: Colors.black,
+                    size: deviceWidth * 0.1,
                   ),
           ],
         ),
@@ -2568,19 +2627,19 @@ with the following piece of code.
           children: [
             Column(
               children: [
+                Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
+
                 // If the item is completed, we hide the button
                 if (!widget.item.completed)
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green,
-                      elevation: 0,
-                      minimumSize: Size(deviceWidth * 0.2, 40)
+                    style: ElevatedButton.styleFrom(backgroundColor: _renderButtonBackground(), elevation: 0),
+                    onPressed: _handleButtonClick,
+                    child: Text(
+                      _renderButtonText(),
+                      style: TextStyle(fontSize: buttonFontSize),
                     ),
-                    onPressed: handleButtonClick,
-                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
                   ),
-                Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
               ],
             )
           ],
@@ -2589,7 +2648,9 @@ with the following piece of code.
         // Todo item description
         title: Text(widget.item.description,
             style: TextStyle(
+                fontSize: descriptionFontSize,
                 decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
                 color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
       ),
     );
@@ -2600,7 +2661,7 @@ If you run the app,
 you should see your `ItemCard` look like this!
 
 <p align='center'>
-    <img width="250" alt="changed_todocard" src="https://user-images.githubusercontent.com/17494745/227505119-7d040805-a209-44be-a7a9-d8d69679822a.gif">
+    <img width="250" alt="changed_todocard" src="https://user-images.githubusercontent.com/17494745/230067002-c92ee35d-dd2b-4ac8-b9ed-4df6755e3139.gif">
 </p>
 
 
@@ -2773,7 +2834,13 @@ class HomePage extends StatelessWidget {
                         shrinkWrap: true,
                         children: [
                           if (items.isNotEmpty) const Divider(height: 0),
-                          for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                          for (var i = 0; i < items.length; i++) ...[
+                            if (i > 0) const Divider(height: 0),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: ItemCard(item: items[i]),
+                            )
+                          ],
                         ],
                       ),
                     ),
@@ -2974,7 +3041,10 @@ and replace with the following.
                             Navigator.pop(context);
                           }
                         },
-                        child: Text('Save', style: TextStyle(fontSize: buttonFontSize),),
+                        child: Text(
+                          'Save',
+                          style: TextStyle(fontSize: buttonFontSize),
+                        ),
                       ),
                     ),
                   ],
@@ -3198,7 +3268,7 @@ Hurray! 🥳
 Now let's run the app and see how it fares!
 
 <p align='center'>
-    <img width="250" alt="final_changed" src="https://user-images.githubusercontent.com/17494745/227533312-c6946e04-41bf-4d96-9cde-d401312470b4.gif">
+    <img width="250" alt="final_changed" src="https://user-images.githubusercontent.com/17494745/230067553-94be69dd-66ca-49c0-bee2-98aca97b6a2b.gif">
 </p>
 
 

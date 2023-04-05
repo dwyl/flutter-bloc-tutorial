@@ -76,12 +76,18 @@ class HomePage extends StatelessWidget {
                     // List of items
                     Expanded(
                       child: ListView(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                        padding: const EdgeInsets.only(top: 40),
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
                         children: [
                           if (items.isNotEmpty) const Divider(height: 0),
-                          for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                          for (var i = 0; i < items.length; i++) ...[
+                            if (i > 0) const Divider(height: 0),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: ItemCard(item: items[i]),
+                            )
+                          ],
                         ],
                       ),
                     ),
@@ -129,7 +135,6 @@ class _NewTodoPageState extends State<NewTodoPage> {
 
   @override
   Widget build(BuildContext context) {
-
     double deviceWidth = MediaQuery.of(context).size.width;
     double textfieldFontSize = deviceWidth * .07;
     double buttonFontSize = deviceWidth * .06;
@@ -152,7 +157,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                         controller: txtFieldController,
                         expands: true,
                         maxLines: null,
-                        autofocus:true,
+                        autofocus: true,
                         style: TextStyle(fontSize: textfieldFontSize),
                         decoration: InputDecoration(
                             border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
@@ -184,7 +189,10 @@ class _NewTodoPageState extends State<NewTodoPage> {
                             Navigator.pop(context);
                           }
                         },
-                        child: Text('Save', style: TextStyle(fontSize: buttonFontSize),),
+                        child: Text(
+                          'Save',
+                          style: TextStyle(fontSize: buttonFontSize),
+                        ),
                       ),
                     ),
                   ],
@@ -275,7 +283,7 @@ class _ItemCardState extends State<ItemCard> {
   }
 
   // Start and stop timer button handler
-  handleButtonClick() {
+  _handleButtonClick() {
     // If timer is ongoing, we stop the stopwatch and the timer in the todo item.
     if (_stopwatch.isRunning) {
       widget.item.stopTimer();
@@ -295,9 +303,31 @@ class _ItemCardState extends State<ItemCard> {
     }
   }
 
+  // Set proper background to timer button according to status of stopwatch
+  _renderButtonBackground() {
+    if (_stopwatch.elapsedMilliseconds == 0) {
+      return const Color.fromARGB(255, 75, 192, 169);
+    } else {
+      return _stopwatch.isRunning ? Colors.red : Colors.green;
+    }
+  }
+
+  // Set button text according to status of stopwatch
+  _renderButtonText() {
+    if (_stopwatch.elapsedMilliseconds == 0) {
+      return "Start";
+    } else {
+      return _stopwatch.isRunning ? "Stop" : "Resume";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
+
+    double descriptionFontSize = deviceWidth * .07;
+    double stopwatchFontSize = deviceWidth * .055;
+    double buttonFontSize = deviceWidth * .05;
 
     return Container(
       key: itemCardWidgetKey,
@@ -316,15 +346,15 @@ class _ItemCardState extends State<ItemCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             widget.item.completed
-                ? const Icon(
+                ? Icon(
                     Icons.check_box,
-                    color: Colors.blue,
-                    size: 18.0,
+                    color: const Color.fromARGB(255, 126, 121, 121),
+                    size: deviceWidth * 0.1,
                   )
-                : const Icon(
+                : Icon(
                     Icons.check_box_outline_blank,
-                    color: Colors.blue,
-                    size: 18.0,
+                    color: Colors.black,
+                    size: deviceWidth * 0.1,
                   ),
           ],
         ),
@@ -334,16 +364,19 @@ class _ItemCardState extends State<ItemCard> {
           children: [
             Column(
               children: [
+                Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
+
                 // If the item is completed, we hide the button
                 if (!widget.item.completed)
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green, elevation: 0, minimumSize: Size(deviceWidth * 0.2, 40)),
-                    onPressed: handleButtonClick,
-                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
+                    style: ElevatedButton.styleFrom(backgroundColor: _renderButtonBackground(), elevation: 0),
+                    onPressed: _handleButtonClick,
+                    child: Text(
+                      _renderButtonText(),
+                      style: TextStyle(fontSize: buttonFontSize),
+                    ),
                   ),
-                Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
               ],
             )
           ],
@@ -352,7 +385,9 @@ class _ItemCardState extends State<ItemCard> {
         // Todo item description
         title: Text(widget.item.description,
             style: TextStyle(
+                fontSize: descriptionFontSize,
                 decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
                 color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
       ),
     );
