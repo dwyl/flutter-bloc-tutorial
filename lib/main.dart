@@ -131,7 +131,8 @@ class _NewTodoPageState extends State<NewTodoPage> {
   Widget build(BuildContext context) {
 
     double deviceWidth = MediaQuery.of(context).size.width;
-    double fontSize = deviceWidth * .07;
+    double textfieldFontSize = deviceWidth * .07;
+    double buttonFontSize = deviceWidth * .06;
 
     return MaterialApp(
         home: Scaffold(
@@ -152,12 +153,12 @@ class _NewTodoPageState extends State<NewTodoPage> {
                         expands: true,
                         maxLines: null,
                         autofocus:true,
-                        style: TextStyle(fontSize: fontSize),
+                        style: TextStyle(fontSize: textfieldFontSize),
                         decoration: InputDecoration(
                             border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
                             hintText: 'Capture more things on your mind...',
                             hintMaxLines: 2,
-                            hintStyle: TextStyle(fontSize: fontSize)),
+                            hintStyle: TextStyle(fontSize: textfieldFontSize)),
                         textAlignVertical: TextAlignVertical.top,
                       ),
                     ),
@@ -183,7 +184,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                             Navigator.pop(context);
                           }
                         },
-                        child: const Text('Save'),
+                        child: Text('Save', style: TextStyle(fontSize: buttonFontSize),),
                       ),
                     ),
                   ],
