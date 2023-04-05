@@ -117,23 +117,28 @@ void main() {
     ElevatedButton buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
 
     // Button should be stopped
-    expect(buttonWidget.child.toString(), const Text("Start").toString());
+    Text buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Start");
 
     // Tap on timer button.
     await tester.tap(find.byKey(itemCardTimerButtonKey));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
 
     // Updating widget and button should be ongoing
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
-    expect(buttonWidget.child.toString(), const Text("Stop").toString());
+    buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Stop");
 
     // Tap on timer button AGAIN
     await tester.tap(find.byKey(itemCardTimerButtonKey));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
 
     // Updating widget and button should be stopped
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
-    expect(buttonWidget.child.toString(), const Text("Start").toString());
+    buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Resume");
   });
 
   testWidgets('Navigate to new page and go back', (WidgetTester tester) async {

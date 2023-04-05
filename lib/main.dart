@@ -349,15 +349,15 @@ class _ItemCardState extends State<ItemCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             widget.item.completed
-                ? Icon(
+                ?  Icon(
                     Icons.check_box,
                     color: const Color.fromARGB(255, 126, 121, 121),
-                    size: deviceWidth * 0.1,
+                    size: deviceWidth * 0.07,
                   )
-                : Icon(
+                :  Icon(
                     Icons.check_box_outline_blank,
                     color: Colors.black,
-                    size: deviceWidth * 0.1,
+                    size: deviceWidth * 0.07,
                   ),
           ],
         ),
