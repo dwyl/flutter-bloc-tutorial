@@ -2730,59 +2730,64 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            appBar: NavigationBar(
-              givenContext: context,
-            ),
-            body: BlocBuilder<TodoBloc, TodoState>(
-              builder: (context, state) {
-                // If the list is loaded
-                if (state is TodoListLoadedState) {
-                  List<TodoItem> items = state.items;
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double fontSize = deviceWidth * .07;
 
-                  return SafeArea(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-                          child:
-                              // Textfield to add new todo item (will open another page)
-                              TextField(
-                            key: textfieldKey,
-                            keyboardType: TextInputType.none,
-                            onTap: () {
-                              Navigator.of(context).push(navigateToNewTodoItemPage());
-                            },
-                            decoration: const InputDecoration(
-                              labelText: 'What do we need to do?',
-                            ),
-                          ),
-                        ),
+    return Scaffold(
+        appBar: NavigationBar(
+          givenContext: context,
+        ),
+        body: BlocBuilder<TodoBloc, TodoState>(
+          builder: (context, state) {
+            // If the list is loaded
+            if (state is TodoListLoadedState) {
+              List<Item> items = state.items;
 
-                        // List of items
-                        Expanded(
-                          child: ListView(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            children: [
-                              if (items.isNotEmpty) const Divider(height: 0),
-                              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
-                            ],
-                          ),
-                        ),
-                      ],
+              return SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
+                      child:
+                          // Textfield to add new todo item (will open another page)
+                          TextField(
+                              key: textfieldKey,
+                              keyboardType: TextInputType.none,
+                              maxLines: 3,
+                              onTap: () {
+                                Navigator.of(context).push(navigateToNewTodoItemPage());
+                              },
+                              style: TextStyle(fontSize: fontSize),
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                                  hintText: 'Capture more things on your mind...',
+                                  hintStyle: TextStyle(fontSize: fontSize)),
+                              textAlignVertical: TextAlignVertical.top),
                     ),
-                  );
-                }
 
-                // If the state of the TodoItemList is not loaded, we show error.
-                else {
-                  return const Center(child: Text("Error loading items list."));
-                }
-              },
-            )));
+                    // List of items
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
+                          if (items.isNotEmpty) const Divider(height: 0),
+                          for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // If the state of the TodoItemList is not loaded, we show error.ˆ
+            else {
+              return const Center(child: Text("Error loading items list."));
+            }
+          },
+        ));
   }
 }
 ```
@@ -2797,7 +2802,35 @@ it navigates to a new page we've yet created.
 This will be the `NewTodoPage` 
 that will have an expanded `TextField` to create a new todo item.
 
-Let's tackle this navigation requirement now.
+We've also changed how the `MaterialApp` widget.
+It now *wraps* the `HomePage` in the `MainApp` widget.
+This is because we are now using 
+[`MediaQuery`](https://api.flutter.dev/flutter/widgets/MediaQuery-class.html) class
+to get the width of the device.
+This width will be important
+to **make our text size responsive**.
+This means it will *grow* as the device grows in size,
+to maintain the aspect ratio across all devices!
+`MediaQuery` must be *under* the `MaterialApp` widget
+within the widget tree to work,
+hence why we are making this change.
+
+```dart
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TodoBloc()..add(TodoListStarted()),
+      child: const MaterialApp(home: HomePage()),   // MaterialApp now wraps from `MainApp`
+    );
+  }
+}
+```
+
+That looks good!
+Now let's tackle this navigation requirement now.
 
 
 #### 6.2.3 Navigating to `NewTodoPage`
@@ -2885,8 +2918,11 @@ Locate the `_NewTodoPageState`
 and replace with the following.
 
 ```dart
-  @override
   Widget build(BuildContext context) {
+
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double fontSize = deviceWidth * .07;
+
     return MaterialApp(
         home: Scaffold(
             appBar: NavigationBar(
@@ -2895,7 +2931,7 @@ and replace with the following.
             ),
             body: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+                padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
                 child: Column(
                   children: [
                     // Textfield that is expanded and borderless
@@ -2905,7 +2941,14 @@ and replace with the following.
                         controller: txtFieldController,
                         expands: true,
                         maxLines: null,
-                        decoration: const InputDecoration(labelText: 'What do we need to do?', alignLabelWithHint: true, border: InputBorder.none),
+                        autofocus:true,
+                        style: TextStyle(fontSize: fontSize),
+                        decoration: InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                            hintText: 'Capture more things on your mind...',
+                            hintMaxLines: 2,
+                            hintStyle: TextStyle(fontSize: fontSize)),
+                        textAlignVertical: TextAlignVertical.top,
                       ),
                     ),
 
@@ -2920,7 +2963,7 @@ and replace with the following.
                           final value = txtFieldController.text;
                           if (value.isNotEmpty) {
                             // Create new item and create AddTodo event
-                            TodoItem newTodoItem = TodoItem(description: value);
+                            Item newTodoItem = Item(description: value);
                             BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
 
                             // Clear textfield

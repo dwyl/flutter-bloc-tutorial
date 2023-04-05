@@ -28,7 +28,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TodoBloc()..add(TodoListStarted()),
-      child: const HomePage(),
+      child: const MaterialApp(home: HomePage()),
     );
   }
 }
@@ -38,59 +38,64 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            appBar: NavigationBar(
-              givenContext: context,
-            ),
-            body: BlocBuilder<TodoBloc, TodoState>(
-              builder: (context, state) {
-                // If the list is loaded
-                if (state is TodoListLoadedState) {
-                  List<Item> items = state.items;
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double fontSize = deviceWidth * .07;
 
-                  return SafeArea(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-                          child:
-                              // Textfield to add new todo item (will open another page)
-                              TextField(
-                            key: textfieldKey,
-                            keyboardType: TextInputType.none,
-                            onTap: () {
-                              Navigator.of(context).push(navigateToNewTodoItemPage());
-                            },
-                            decoration: const InputDecoration(
-                              labelText: 'What do we need to do?',
-                            ),
-                          ),
-                        ),
+    return Scaffold(
+        appBar: NavigationBar(
+          givenContext: context,
+        ),
+        body: BlocBuilder<TodoBloc, TodoState>(
+          builder: (context, state) {
+            // If the list is loaded
+            if (state is TodoListLoadedState) {
+              List<Item> items = state.items;
 
-                        // List of items
-                        Expanded(
-                          child: ListView(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            children: [
-                              if (items.isNotEmpty) const Divider(height: 0),
-                              for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
-                            ],
-                          ),
-                        ),
-                      ],
+              return SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
+                      child:
+                          // Textfield to add new todo item (will open another page)
+                          TextField(
+                              key: textfieldKey,
+                              keyboardType: TextInputType.none,
+                              maxLines: 3,
+                              onTap: () {
+                                Navigator.of(context).push(navigateToNewTodoItemPage());
+                              },
+                              style: TextStyle(fontSize: fontSize),
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                                  hintText: 'Capture more things on your mind...',
+                                  hintStyle: TextStyle(fontSize: fontSize)),
+                              textAlignVertical: TextAlignVertical.top),
                     ),
-                  );
-                }
 
-                // If the state of the TodoItemList is not loaded, we show error.
-                else {
-                  return const Center(child: Text("Error loading items list."));
-                }
-              },
-            )));
+                    // List of items
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
+                          if (items.isNotEmpty) const Divider(height: 0),
+                          for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // If the state of the TodoItemList is not loaded, we show error.ˆ
+            else {
+              return const Center(child: Text("Error loading items list."));
+            }
+          },
+        ));
   }
 }
 
@@ -124,6 +129,10 @@ class _NewTodoPageState extends State<NewTodoPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double fontSize = deviceWidth * .07;
+
     return MaterialApp(
         home: Scaffold(
             appBar: NavigationBar(
@@ -132,7 +141,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
             ),
             body: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+                padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
                 child: Column(
                   children: [
                     // Textfield that is expanded and borderless
@@ -142,7 +151,14 @@ class _NewTodoPageState extends State<NewTodoPage> {
                         controller: txtFieldController,
                         expands: true,
                         maxLines: null,
-                        decoration: const InputDecoration(labelText: 'What do we need to do?', alignLabelWithHint: true, border: InputBorder.none),
+                        autofocus:true,
+                        style: TextStyle(fontSize: fontSize),
+                        decoration: InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                            hintText: 'Capture more things on your mind...',
+                            hintMaxLines: 2,
+                            hintStyle: TextStyle(fontSize: fontSize)),
+                        textAlignVertical: TextAlignVertical.top,
                       ),
                     ),
 
@@ -204,7 +220,7 @@ class NavigationBar extends StatelessWidget with PreferredSizeWidget {
       centerTitle: true,
       leading: showGoBackButton
           ? BackButton(
-            key: backButtonKey,
+              key: backButtonKey,
               onPressed: () {
                 Navigator.pop(givenContext);
               },
@@ -280,7 +296,6 @@ class _ItemCardState extends State<ItemCard> {
 
   @override
   Widget build(BuildContext context) {
-
     double deviceWidth = MediaQuery.of(context).size.width;
 
     return Container(
@@ -323,15 +338,9 @@ class _ItemCardState extends State<ItemCard> {
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          _stopwatch.isRunning ? Colors.red : Colors.green,
-                      elevation: 0,
-                      minimumSize: Size(deviceWidth * 0.2, 40)
-                    ),
+                        backgroundColor: _stopwatch.isRunning ? Colors.red : Colors.green, elevation: 0, minimumSize: Size(deviceWidth * 0.2, 40)),
                     onPressed: handleButtonClick,
-                    child: _stopwatch.isRunning
-                        ? const Text("Stop")
-                        : const Text("Start"), 
+                    child: _stopwatch.isRunning ? const Text("Stop") : const Text("Start"),
                   ),
                 Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 11))
               ],
