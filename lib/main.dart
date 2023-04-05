@@ -362,9 +362,23 @@ class _ItemCardState extends State<ItemCard> {
           ],
         ),
 
-        // Start and stop timer with stopwatch text
-        trailing: Wrap(
+        title: Row(
           children: [
+
+            // Todo item description
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 16.0),
+                child: Text(widget.item.description,
+                    style: TextStyle(
+                        fontSize: descriptionFontSize,
+                        decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                        fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
+                        color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+              ),
+            ),
+
+            // Stopwatch and timer button 
             Column(
               children: [
                 Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
@@ -387,14 +401,6 @@ class _ItemCardState extends State<ItemCard> {
             )
           ],
         ),
-
-        // Todo item description
-        title: Text(widget.item.description,
-            style: TextStyle(
-                fontSize: descriptionFontSize,
-                decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
-                fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
-                color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
       ),
     );
   }

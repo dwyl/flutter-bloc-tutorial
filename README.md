@@ -2622,9 +2622,23 @@ according to the state of the stopwatch.
           ],
         ),
 
-        // Start and stop timer with stopwatch text
-        trailing: Wrap(
+        title: Row(
           children: [
+
+            // Todo item description
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 16.0),
+                child: Text(widget.item.description,
+                    style: TextStyle(
+                        fontSize: descriptionFontSize,
+                        decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                        fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
+                        color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+              ),
+            ),
+
+            // Stopwatch and timer button 
             Column(
               children: [
                 Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
@@ -2647,18 +2661,23 @@ according to the state of the stopwatch.
             )
           ],
         ),
-
-        // Todo item description
-        title: Text(widget.item.description,
-            style: TextStyle(
-                fontSize: descriptionFontSize,
-                decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
-                fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
-                color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
       ),
     );
   }
 ```
+
+We've removed the **timer button** and **stopwatch**
+from the `trailing` parameter
+and made it part of the `title` parameter
+inside a `Row`
+because we had a few behaviour problems with the timer button.
+The button would overflow the `trailing` container and, 
+when pressed,
+it would sometimes mark the todo item as "done"
+instead of starting/stopping the timer.
+
+You can learn more about this behaviour
+on Stack Overflow in https://stackoverflow.com/questions/62747015/listtile-with-button.
 
 If you run the app,
 you should see your `ItemCard` look like this!
