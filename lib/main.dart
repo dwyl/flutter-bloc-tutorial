@@ -349,12 +349,12 @@ class _ItemCardState extends State<ItemCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             widget.item.completed
-                ?  Icon(
+                ? Icon(
                     Icons.check_box,
                     color: const Color.fromARGB(255, 126, 121, 121),
                     size: deviceWidth * 0.07,
                   )
-                :  Icon(
+                : Icon(
                     Icons.check_box_outline_blank,
                     color: Colors.black,
                     size: deviceWidth * 0.07,
@@ -364,7 +364,6 @@ class _ItemCardState extends State<ItemCard> {
 
         title: Row(
           children: [
-
             // Todo item description
             Expanded(
               child: Container(
@@ -378,7 +377,7 @@ class _ItemCardState extends State<ItemCard> {
               ),
             ),
 
-            // Stopwatch and timer button 
+            // Stopwatch and timer button
             Column(
               children: [
                 Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
