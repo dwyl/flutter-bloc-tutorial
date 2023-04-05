@@ -2633,7 +2633,10 @@ according to the state of the stopwatch.
                 if (!widget.item.completed)
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
-                    style: ElevatedButton.styleFrom(backgroundColor: _renderButtonBackground(), elevation: 0),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: _renderButtonBackground(),
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                     onPressed: _handleButtonClick,
                     child: Text(
                       _renderButtonText(),
@@ -3026,7 +3029,10 @@ and replace with the following.
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
                         key: saveButtonKey,
-                        style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 75, 192, 169)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 75, 192, 169),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
                         onPressed: () {
                           final value = txtFieldController.text;
                           if (value.isNotEmpty) {

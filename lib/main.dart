@@ -174,7 +174,10 @@ class _NewTodoPageState extends State<NewTodoPage> {
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
                         key: saveButtonKey,
-                        style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 75, 192, 169)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 75, 192, 169),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
                         onPressed: () {
                           final value = txtFieldController.text;
                           if (value.isNotEmpty) {
@@ -370,7 +373,10 @@ class _ItemCardState extends State<ItemCard> {
                 if (!widget.item.completed)
                   ElevatedButton(
                     key: itemCardTimerButtonKey,
-                    style: ElevatedButton.styleFrom(backgroundColor: _renderButtonBackground(), elevation: 0),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: _renderButtonBackground(),
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                     onPressed: _handleButtonClick,
                     child: Text(
                       _renderButtonText(),
