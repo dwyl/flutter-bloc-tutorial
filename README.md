@@ -62,7 +62,7 @@ Use these links to skip straight to the section that interests you:
       - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
       - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
   - [5. Run the app!](#5-run-the-app)
-  - [6. Give the UI a new look ✨ (Optional)](#6-give-the-ui-a-new-look--optional)
+  - [6. Give the Interface a New Look ✨ (Optional)](#6-give-the-interface-a-new-look--optional)
     - [6.1 Refactor `ItemCard`](#61-refactor-itemcard)
     - [6.2 Refactoring the `HomePage`](#62-refactoring-the-homepage)
       - [6.2.1 Extracting `AppBar`](#621-extracting-appbar)
@@ -1326,7 +1326,7 @@ If you run the app,
 it should look like this.
 
 <p align='center'>
-    <img width="250" alt="basic-layout" src="https://user-images.githubusercontent.com/17494745/226194954-29b68e1c-bf7b-4971-88d5-43295aecc24a.png">
+  <img width="250" alt="basic-layout" src="https://user-images.githubusercontent.com/17494745/226194954-29b68e1c-bf7b-4971-88d5-43295aecc24a.png">
 </p>
 
 As you can see,
@@ -2480,27 +2480,27 @@ either by adding new elements
 or toggling items within it.
 
 
-## 6. Give the UI a new look ✨ (Optional) 
+## 6. Give the Interface a New Look ✨ (Optional) 
 
 
 We hope this tutorial was useful to you,
-because it certainly is useful to us as well!
+because it certainly is useful to us!
 Given we are developing our own
-[app](https://github.com/dwyl/app),
-this section will focus on changing the UI 
-so it looks as close to the 
-[wireframes](https://www.figma.com/file/WrpkKGJNYZbeCzMRDVtvQLbC/dwyl-app?node-id=0-1&t=rfnjWXLzpiyhJmjT-0)
+[`App`](https://github.com/dwyl/app),
+this section will focus on changing the interface
+so it looks as close to the wireframes in
+[**`Figma`**](https://www.figma.com/file/WrpkKGJNYZbeCzMRDVtvQLbC/dwyl-app?node-id=0-1&t=rfnjWXLzpiyhJmjT-0)
 as possible.
 
 
 <p align='center'>
-  <img class=mobile-image width="250" style="display:inline-block" src="https://user-images.githubusercontent.com/17494745/227018458-19a5f8bf-6443-43d9-a02a-4a7f355f2994.png" />
-  <img class=mobile-image width="250" style="display:inline-block" src="https://user-images.githubusercontent.com/17494745/227019098-22e7c26e-dd23-4f70-9f25-6f1f4eb16020.png" />
+  <img src="https://user-images.githubusercontent.com/194400/230008470-deaa141c-0729-4b91-b212-d0164f5aab7a.png" />
+  <img src="https://user-images.githubusercontent.com/194400/230008826-73fa5756-30ec-486e-a244-0af60dfa1e28.png" />
 </p>
 
 As you can see, 
 the `TextField` is meant to expand
-*over* the rest of the page when focussed. <br />
+to use as much of the page when focussed. <br />
 After saving,
 it should contract back to its compact size.
 
