@@ -2502,9 +2502,8 @@ or toggling items within it.
 
 ## 6. Give the Interface a New Look ✨ (Optional) 
 
-
 We hope this tutorial was useful to you,
-because it certainly is useful to us!
+because it certainly is to us!
 Given we are developing our own
 [`App`](https://github.com/dwyl/app),
 this section will focus on changing the interface
@@ -2840,7 +2839,7 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
+                      padding: const EdgeInsets.only(right: 0, left: 0, top: 0),
                       child:
                           // Textfield to add new todo item (will open another page)
                           TextField(
@@ -3320,5 +3319,5 @@ and it now resembles the Figma wireframes we've shown before!
 # I need help! ❓
 If you have some feedback or have any question, 
 do not hesitate and open an 
-[issue](https://github.com/dwyl/flutter-bloc-tutorial/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)! 
+[issue](https://github.com/dwyl/flutter-bloc-tutorial/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)! <br />
 We are here to help and are happy for your contribution!

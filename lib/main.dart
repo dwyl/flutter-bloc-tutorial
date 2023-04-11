@@ -54,24 +54,21 @@ class HomePage extends StatelessWidget {
               return SafeArea(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                      child:
-                          // Textfield to add new todo item (will open another page)
-                          TextField(
-                              key: textfieldKey,
-                              keyboardType: TextInputType.none,
-                              maxLines: 3,
-                              onTap: () {
-                                Navigator.of(context).push(navigateToNewTodoItemPage());
-                              },
-                              style: TextStyle(fontSize: fontSize),
-                              decoration: InputDecoration(
-                                  border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                                  hintText: 'Capture more things on your mind...',
-                                  hintStyle: TextStyle(fontSize: fontSize)),
-                              textAlignVertical: TextAlignVertical.top),
-                    ),
+                    TextField(
+                        key: textfieldKey,
+                        keyboardType: TextInputType.none,
+                        maxLines: 2,
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(navigateToNewTodoItemPage());
+                        },
+                        style: TextStyle(fontSize: fontSize),
+                        decoration: InputDecoration(
+                            border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.zero),
+                            hintText: 'Capture more things on your mind...',
+                            hintStyle: TextStyle(fontSize: fontSize)),
+                        textAlignVertical: TextAlignVertical.top),
 
                     // List of items
                     Expanded(
@@ -84,7 +81,8 @@ class HomePage extends StatelessWidget {
                           for (var i = 0; i < items.length; i++) ...[
                             if (i > 0) const Divider(height: 0),
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: ItemCard(item: items[i]),
                             )
                           ],
@@ -109,7 +107,8 @@ class HomePage extends StatelessWidget {
 
 Route navigateToNewTodoItemPage() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => const NewTodoPage(),
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        const NewTodoPage(),
     transitionDuration: Duration.zero,
     reverseTransitionDuration: Duration.zero,
   );
@@ -146,60 +145,61 @@ class _NewTodoPageState extends State<NewTodoPage> {
               showGoBackButton: true,
             ),
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: Column(
-                  children: [
-                    // Textfield that is expanded and borderless
-                    Expanded(
-                      child: TextField(
-                        key: textfieldOnNewPageKey,
-                        controller: txtFieldController,
-                        expands: true,
-                        maxLines: null,
-                        autofocus: true,
-                        style: TextStyle(fontSize: textfieldFontSize),
-                        decoration: InputDecoration(
-                            border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                            hintText: 'Capture more things on your mind...',
-                            hintMaxLines: 2,
-                            hintStyle: TextStyle(fontSize: textfieldFontSize)),
-                        textAlignVertical: TextAlignVertical.top,
+              child: Column(
+                children: [
+                  // Textfield that is expanded and borderless
+                  Expanded(
+                    child: TextField(
+                      key: textfieldOnNewPageKey,
+                      controller: txtFieldController,
+                      expands: true,
+                      maxLines: null,
+                      autofocus: true,
+                      style: TextStyle(fontSize: textfieldFontSize),
+                      decoration: InputDecoration(
+                          border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.zero),
+                          hintText: 'start typing',
+                          hintMaxLines: 2,
+                          hintStyle: TextStyle(fontSize: textfieldFontSize)),
+                      textAlignVertical: TextAlignVertical.top,
+                    ),
+                  ),
+
+                  // Save button.
+                  // When submitted, it adds a new todo item, clears the controller and navigates back
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      key: saveButtonKey,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 75, 192, 169),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero),
+                      ),
+                      onPressed: () {
+                        final value = txtFieldController.text;
+                        if (value.isNotEmpty) {
+                          // Create new item and create AddTodo event
+                          Item newTodoItem = Item(description: value);
+                          BlocProvider.of<TodoBloc>(context)
+                              .add(AddTodoEvent(newTodoItem));
+
+                          // Clear textfield
+                          txtFieldController.clear();
+
+                          // Go back to home page
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Text(
+                        'Save',
+                        style: TextStyle(fontSize: buttonFontSize),
                       ),
                     ),
-
-                    // Save button.
-                    // When submitted, it adds a new todo item, clears the controller and navigates back
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: ElevatedButton(
-                        key: saveButtonKey,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 75, 192, 169),
-                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        ),
-                        onPressed: () {
-                          final value = txtFieldController.text;
-                          if (value.isNotEmpty) {
-                            // Create new item and create AddTodo event
-                            Item newTodoItem = Item(description: value);
-                            BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
-
-                            // Clear textfield
-                            txtFieldController.clear();
-
-                            // Go back to home page
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(
-                          'Save',
-                          style: TextStyle(fontSize: buttonFontSize),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             )));
   }
@@ -214,7 +214,8 @@ class NavigationBar extends StatelessWidget with PreferredSizeWidget {
   // Build context for the "go back" button works
   final BuildContext givenContext;
 
-  const NavigationBar({super.key, required this.givenContext, this.showGoBackButton = false});
+  const NavigationBar(
+      {super.key, required this.givenContext, this.showGoBackButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -223,8 +224,15 @@ class NavigationBar extends StatelessWidget with PreferredSizeWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // dwyl logo
-          Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(givenContext);
+            },
+            child:
+                // dwyl logo
+                Image.asset("assets/icon/icon.png",
+                    fit: BoxFit.fitHeight, height: 30),
+          ),
         ],
       ),
       backgroundColor: const Color.fromARGB(255, 81, 72, 72),
@@ -371,16 +379,24 @@ class _ItemCardState extends State<ItemCard> {
                 child: Text(widget.item.description,
                     style: TextStyle(
                         fontSize: descriptionFontSize,
-                        decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
-                        fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
-                        color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+                        decoration: widget.item.completed
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                        fontStyle: widget.item.completed
+                            ? FontStyle.italic
+                            : FontStyle.normal,
+                        color: widget.item.completed
+                            ? const Color.fromARGB(255, 126, 121, 121)
+                            : Colors.black)),
               ),
             ),
 
             // Stopwatch and timer button
             Column(
               children: [
-                Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
+                Text(formatTime(_stopwatch.elapsedMilliseconds),
+                    style: TextStyle(
+                        color: Colors.black54, fontSize: stopwatchFontSize)),
 
                 // If the item is completed, we hide the button
                 if (!widget.item.completed)
@@ -389,7 +405,8 @@ class _ItemCardState extends State<ItemCard> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: _renderButtonBackground(),
                         elevation: 0,
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero)),
                     onPressed: _handleButtonClick,
                     child: Text(
                       _renderButtonText(),
