@@ -22,7 +22,7 @@ App's state.
 
 Use these links to skip straight to the section that interests you:
 
-- [A note 🗒️](#a-note-️)
+- [Quick Note 🗒️](#quick-note-️)
 - [Why? 👀](#why-)
   - [Do I actually need this?](#do-i-actually-need-this)
 - [What? 🤷‍♂️](#what-️)
@@ -62,22 +62,30 @@ Use these links to skip straight to the section that interests you:
       - [4.3.1 Start and stopping the timer](#431-start-and-stopping-the-timer)
       - [4.3.2 Toggling the `ItemCard`](#432-toggling-the-itemcard)
   - [5. Run the app!](#5-run-the-app)
+  - [6. Give the Interface a New Look ✨ (Optional)](#6-give-the-interface-a-new-look--optional)
+    - [6.1 Refactor `ItemCard`](#61-refactor-itemcard)
+    - [6.2 Refactoring the `HomePage`](#62-refactoring-the-homepage)
+      - [6.2.1 Extracting `AppBar`](#621-extracting-appbar)
+      - [6.2.2 Converting `HomePage` to stateless widget](#622-converting-homepage-to-stateless-widget)
+      - [6.2.3 Navigating to `NewTodoPage`](#623-navigating-to-newtodopage)
+    - [6.3 Creating the `NewTodoPage`](#63-creating-the-newtodopage)
+    - [6.4 Fix failing tests](#64-fix-failing-tests)
 - [I need help! ❓](#i-need-help-)
 
 
-# A note 🗒️
+# Quick Note 🗒️
 
-This tutorial assumes you have prior basic knowledge of `Flutter`.
-If this is your first time using `Flutter`,
-please visit [`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
-_first_ to learn the basics. 
+This tutorial assumes you have prior _basic_ knowledge of `Flutter`.
+If this is your _first_ time using `Flutter`,
+please visit 
+[`dwyl/learn-flutter`](https://github.com/dwyl/learn-flutter)
+to learn the basics. 
 
 After that, 
 we *highly recommend* you
-follow [`dwyl/flutter-todo-list-tutorial`](https://github.com/dwyl/flutter-todo-list-tutorial).
-You will find great value in it
-to guide you through implementing an app
-with shared state *without* `Bloc`.
+follow [`dwyl/**flutter-todo-list-tutorial**`](https://github.com/dwyl/flutter-todo-list-tutorial)
+because it covers building a **Todo List**
+***without*** the "advanced" state management of **`Bloc`**.
 
 # Why? 👀
 
@@ -87,7 +95,7 @@ In these widgets, the state and
 how/when it changes determines how many times
 the widget is rendered.
 The state that is contained within the widget
-is referred to as "local state".
+is referred to as "**_local_ state**".
 
 A `Flutter` app consists of 
 *multiple widgets*, 
@@ -102,14 +110,17 @@ and pertains to the state of the whole app.
 An example of these are shopping carts in an 
 e-commerce app or personal preferences.
 
-Consider the following gif, taken directly from the Flutter docs -> https://docs.flutter.dev/development/data-and-backend/state-mgmt/intro
+Consider the following `GIF`, 
+taken directly from the Flutter docs: 
+[docs.flutter.dev/development/data-and-backend/state-mgmt](https://docs.flutter.dev/development/data-and-backend/state-mgmt/intro)
 
 ![shared-state](https://user-images.githubusercontent.com/17494745/223102689-03249a71-3472-4628-b586-c87d167ad3a7.png)
 
-
-Each widget in the widget tree might have its own local state 
-but there's a piece of application state (i.e. shared state) 
-in the form of a cart. 
+Each widget in the widget tree 
+might have its own local state 
+but there's a piece of application state 
+(i.e. shared state) 
+in the form of a shopping cart. 
 This cart is accessible from any widget of the app - 
 in this case, the `MyCart` widget 
 uses it to list what item was added to it.
@@ -1135,7 +1146,7 @@ void main() {
     expect(checkboxWidget.icon, Icons.task_alt);
   });
 
-    testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
+  testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
     await tester.pumpWidget(const MainApp());
     await tester.pumpAndSettle();
 
@@ -1143,9 +1154,14 @@ void main() {
     expect(find.byKey(textfieldKey), findsOneWidget);
     expect(find.byKey(itemCardWidgetKey), findsNothing);
 
-    // Type text into todo input
-    await tester.enterText(find.byKey(textfieldKey), 'new todo');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Type text into todo input and tap "Save" button to add new todo item
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
     // Pump the widget so it renders the new item
     await tester.pumpAndSettle(const Duration(seconds: 2));
@@ -1157,23 +1173,28 @@ void main() {
     ElevatedButton buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
 
     // Button should be stopped
-    expect(buttonWidget.child.toString(), const Text("Start").toString());
+    Text buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Start");
 
     // Tap on timer button.
     await tester.tap(find.byKey(itemCardTimerButtonKey));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
 
     // Updating widget and button should be ongoing
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
-    expect(buttonWidget.child.toString(), const Text("Stop").toString());
+    buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Stop");
 
     // Tap on timer button AGAIN
     await tester.tap(find.byKey(itemCardTimerButtonKey));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
 
     // Updating widget and button should be stopped
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
-    expect(buttonWidget.child.toString(), const Text("Start").toString());
+    buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Resume");
   });
 }
 ```
@@ -1230,7 +1251,7 @@ class _MainAppState extends State<MainApp> {
       children: [
         TextField(
           decoration: const InputDecoration(
-            labelText: 'What do we need to do?',
+            labelText: 'What needs to be done?',
           ),
           onSubmitted: (value) {
             print("submit new todo:$value");
@@ -1315,7 +1336,7 @@ If you run the app,
 it should look like this.
 
 <p align='center'>
-    <img width="250" alt="basic-layout" src="https://user-images.githubusercontent.com/17494745/226194954-29b68e1c-bf7b-4971-88d5-43295aecc24a.png">
+  <img width="250" alt="basic-layout" src="https://user-images.githubusercontent.com/17494745/226194954-29b68e1c-bf7b-4971-88d5-43295aecc24a.png">
 </p>
 
 As you can see,
@@ -2198,9 +2219,19 @@ when listing the items
 inside the `build` function
 of `_HomePageState` class!
 
+> **Note**
+>
+> We've added a padding in-between list items to make it prettier 😊.
+
 ```dart
 if (items.isNotEmpty) const Divider(height: 0),
-for (var i = 0; i < items.length; i++) ...[if (i > 0) const Divider(height: 0), ItemCard(item: items[i])],        
+for (var i = 0; i < items.length; i++) ...[
+  if (i > 0) const Divider(height: 0),
+  Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: ItemCard(item: items[i]),
+  )
+],       
 ```
 
 Let's now change the `_ItemCardState`
@@ -2459,7 +2490,7 @@ You should see this output.
 Heck yeah! 🥳
 
 We are *successfully* leveraging `Bloc`
-to manage the list of todo items.
+to manage the `list` of todo `items`.
 These items are accessible by all the widgets
 in the widget tree.
 Every widget is able to access them
@@ -2468,8 +2499,825 @@ which is what happens when we mutate the todo item list,
 either by adding new elements
 or toggling items within it.
 
+
+## 6. Give the Interface a New Look ✨ (Optional) 
+
+We hope this tutorial was useful to you,
+because it certainly is to us!
+Given we are developing our own
+[`App`](https://github.com/dwyl/app),
+this section will focus on changing the interface
+so it looks as close to the wireframes in
+[**`Figma`**](https://www.figma.com/file/WrpkKGJNYZbeCzMRDVtvQLbC/dwyl-app?node-id=0-1&t=rfnjWXLzpiyhJmjT-0)
+as possible.
+
+
+<p align='center'>
+  <img src="https://user-images.githubusercontent.com/194400/230008470-deaa141c-0729-4b91-b212-d0164f5aab7a.png" />
+  <img src="https://user-images.githubusercontent.com/194400/230008826-73fa5756-30ec-486e-a244-0af60dfa1e28.png" />
+</p>
+
+As you can see, 
+the `TextField` is meant to expand
+to use as much of the page when focussed. <br />
+After saving,
+it should contract back to its compact size.
+
+Let's start changing our app!
+
+### 6.1 Refactor `ItemCard`
+
+To make the `ItemCard` look as close
+to the Figma wireframes as possible,
+we are going to make some changes to it.
+Mainly:
+
+- Change the icons when toggled.
+- `person` is only able to toggle the card
+when the `timer` is *not running*.
+- Hide the `timer` button when the card
+is toggled to "completed".
+- Change the style of the `text`
+when the todo `item` is marked as "completed".
+
+To make these changes, 
+open `lib/main.dart`
+and locate the `TodoItemCard` class.
+Replace `build` function
+of `_ItemCardState`
+with the following piece of code.
+Don't forget to add the added functions
+that will dynamically change the text,
+color and style of the widgets 
+according to the state of the stopwatch.
+
+```dart
+
+
+  // Start and stop timer button handler
+  _handleButtonClick() {
+    // If timer is ongoing, we stop the stopwatch and the timer in the todo item.
+    if (_stopwatch.isRunning) {
+      widget.item.stopTimer();
+      _stopwatch.stop();
+
+      // Re-render
+      setState(() {});
+    }
+
+    // If we are to start timer, start the timer in todo item and stopwatch.
+    else {
+      widget.item.startTimer();
+      _stopwatch.start();
+
+      // Re-render
+      setState(() {});
+    }
+  }
+
+  // Set proper background to timer button according to status of stopwatch
+  _renderButtonBackground() {
+    if (_stopwatch.elapsedMilliseconds == 0) {
+      return const Color.fromARGB(255, 75, 192, 169);
+    } else {
+      return _stopwatch.isRunning ? Colors.red : Colors.green;
+    }
+  }
+
+  // Set button text according to status of stopwatch
+  _renderButtonText() {
+    if (_stopwatch.elapsedMilliseconds == 0) {
+      return "Start";
+    } else {
+      return _stopwatch.isRunning ? "Stop" : "Resume";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+
+    double descriptionFontSize = deviceWidth * .07;
+    double stopwatchFontSize = deviceWidth * .055;
+    double buttonFontSize = deviceWidth * .05;
+
+    return Container(
+      key: itemCardWidgetKey,
+      constraints: const BoxConstraints(minHeight: 70),
+      child: ListTile(
+        onTap: () {
+          // Create a ToggleTodo event to toggle the `complete` field
+          // ONLY if the timer is stopped
+          if (!_stopwatch.isRunning) {
+            context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+          }
+        },
+
+        // Checkbox-style icon showing if it's completed or not
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            widget.item.completed
+                ?  Icon(
+                    Icons.check_box,
+                    color: const Color.fromARGB(255, 126, 121, 121),
+                    size: deviceWidth * 0.07,
+                  )
+                :  Icon(
+                    Icons.check_box_outline_blank,
+                    color: Colors.black,
+                    size: deviceWidth * 0.07,
+                  ),
+          ],
+        ),
+
+        title: Row(
+          children: [
+
+            // Todo item description
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 16.0),
+                child: Text(widget.item.description,
+                    style: TextStyle(
+                        fontSize: descriptionFontSize,
+                        decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                        fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
+                        color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+              ),
+            ),
+
+            // Stopwatch and timer button 
+            Column(
+              children: [
+                Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
+
+                // If the item is completed, we hide the button
+                if (!widget.item.completed)
+                  ElevatedButton(
+                    key: itemCardTimerButtonKey,
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: _renderButtonBackground(),
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                    onPressed: _handleButtonClick,
+                    child: Text(
+                      _renderButtonText(),
+                      style: TextStyle(fontSize: buttonFontSize),
+                    ),
+                  ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+```
+
+We've removed the **timer button** and **stopwatch**
+from the `trailing` parameter
+and made it part of the `title` parameter
+inside a `Row`
+because we had a few behaviour problems with the timer button.
+The button would overflow the `trailing` container and, 
+when pressed,
+it would sometimes mark the todo item as "done"
+instead of starting/stopping the timer.
+
+You can learn more about this behaviour
+on Stack Overflow in https://stackoverflow.com/questions/62747015/listtile-with-button.
+
+If you run the app,
+you should see your `ItemCard` look like this!
+
+<p align='center'>
+    <img width="250" alt="changed_todocard" src="https://user-images.githubusercontent.com/17494745/230067002-c92ee35d-dd2b-4ac8-b9ed-4df6755e3139.gif">
+</p>
+
+
+### 6.2 Refactoring the `HomePage`
+
+Let's focus on refactoring the `HomePage` now.
+As we've seen in the pictures from the Figma wireframes prior,
+the `Textfield` will effectively *extend*
+to fill the whole page
+so the person can input text to create a new todo.
+This *extension* is actually
+**a new page** that we will transition into.
+
+With this in mind, 
+we will need to *separate* the `appBar`
+to its own widget 
+because we are going to be using it in two pages:
+the `HomePage` (which was already using it)
+and the `NewTodoPage` 
+(the new page that the person will input text
+and create a new todo item - not yet created).
+
+So here's what we are going to do
+to the `HomePage` stateful class.
+
+- extract the `AppBar` to a different widget
+called `NavigationBar`.
+- convert `HomePage` to a **stateless widget**.
+This is because the `TextField` 
+will just be a gateway to open a new page - 
+we are not going to input any text.
+So it's useless to have `HomePage as a *stateful widget*.
+
+#### 6.2.1 Extracting `AppBar`
+
+Let's go over the first one first.
+Create a new `NavigationBar` stateless widget class
+for the appbar.
+
+```dart
+// Widget for the navigation bar
+class NavigationBar extends StatelessWidget with PreferredSizeWidget {
+  // Boolean that tells the bar to have a button to go to the previous page
+  final bool showGoBackButton;
+  // Build context for the "go back" button works
+  final BuildContext givenContext;
+
+  const NavigationBar({super.key, required this.givenContext, this.showGoBackButton = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // dwyl logo
+          Image.asset("assets/icon/icon.png", fit: BoxFit.fitHeight, height: 30),
+        ],
+      ),
+      backgroundColor: const Color.fromARGB(255, 81, 72, 72),
+      elevation: 0.0,
+      centerTitle: true,
+      leading: showGoBackButton
+          ? BackButton(
+            key: backButtonKey,
+              onPressed: () {
+                Navigator.pop(givenContext);
+              },
+            )
+          : null,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(50);
+}
+```
+
+We've made a few changes to the `AppBar`.
+We can pass the widget an option to go back to the page where it came from.
+This is because this `NavigationBar` will also be present
+in the new page the person will be redirected whenever he creates a new todo item.
+For this,
+we are adding a "Go Back" button
+to the start of the `AppBar`
+that pops the `context` that is passed on into the widget.
+
+We are also using an image icon.
+We need to create the directory
+`assets/icon`
+and place [`icon.png`](./assets/icon/icon.png) there
+(you can download the image from this repo).
+Inside `pubspec.yaml`,
+we need to add the path to this folder
+so `Flutter` has access to the resource.
+
+```yaml
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icon/
+```
+
+Don't forget to add the following line 
+alongside the other keys.
+
+```dart
+final backButtonKey = UniqueKey();
+```
+
+This key will be used to identify the 
+button to go back when we test our changes.
+
+
+#### 6.2.2 Converting `HomePage` to stateless widget
+
+Now we are going to convert 
+the `HomePage` to a **stateless widget**.
+
+Inside `lib/main.dart`...
+
+```dart
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double fontSize = deviceWidth * .07;
+
+    return Scaffold(
+        appBar: NavigationBar(
+          givenContext: context,
+        ),
+        body: BlocBuilder<TodoBloc, TodoState>(
+          builder: (context, state) {
+            // If the list is loaded
+            if (state is TodoListLoadedState) {
+              List<Item> items = state.items;
+
+              return SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 0, left: 0, top: 0),
+                      child:
+                          // Textfield to add new todo item (will open another page)
+                          TextField(
+                              key: textfieldKey,
+                              keyboardType: TextInputType.none,
+                              maxLines: 3,
+                              onTap: () {
+                                Navigator.of(context).push(navigateToNewTodoItemPage());
+                              },
+                              style: TextStyle(fontSize: fontSize),
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                                  hintText: 'Capture more things on your mind...',
+                                  hintStyle: TextStyle(fontSize: fontSize)),
+                              textAlignVertical: TextAlignVertical.top),
+                    ),
+
+                    // List of items
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
+                          if (items.isNotEmpty) const Divider(height: 0),
+                          for (var i = 0; i < items.length; i++) ...[
+                            if (i > 0) const Divider(height: 0),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: ItemCard(item: items[i]),
+                            )
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // If the state of the TodoItemList is not loaded, we show error.ˆ
+            else {
+              return const Center(child: Text("Error loading items list."));
+            }
+          },
+        ));
+  }
+}
+```
+
+As you can see,
+we are now using the `NavigationBar`
+as an `AppBar`.
+We've made changes to the `TextField` as well.
+It doesn't show a keyboard when tapped.
+And *when tapped*, 
+it navigates to a new page we've yet created.
+This will be the `NewTodoPage` 
+that will have an expanded `TextField` to create a new todo item.
+
+We've also changed how the `MaterialApp` widget.
+It now *wraps* the `HomePage` in the `MainApp` widget.
+This is because we are now using 
+[`MediaQuery`](https://api.flutter.dev/flutter/widgets/MediaQuery-class.html) class
+to get the width of the device.
+This width will be important
+to **make our text size responsive**.
+This means it will *grow* as the device grows in size,
+to maintain the aspect ratio across all devices!
+`MediaQuery` must be *under* the `MaterialApp` widget
+within the widget tree to work,
+hence why we are making this change.
+
+```dart
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TodoBloc()..add(TodoListStarted()),
+      child: const MaterialApp(home: HomePage()),   // MaterialApp now wraps from `MainApp`
+    );
+  }
+}
+```
+
+That looks good!
+Now let's tackle this navigation requirement now.
+
+
+#### 6.2.3 Navigating to `NewTodoPage`
+
+The person needs to be able to navigate to the new page.
+Let's implement the `navigateToNewTodoItemPage()`
+function we are using.
+
+```dart
+Route navigateToNewTodoItemPage() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => const NewTodoPage(),
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+  );
+}
+```
+
+We are using [`PageRouteBuilder`](https://api.flutter.dev/flutter/widgets/PageRouteBuilder-class.html)
+for the transition between pages.
+By default, the transition between pages
+has a default animation. 
+We can remove this transition by overriding these values
+in `transitionDuration` and `reverseTransitionDuration`.
+
+> If you are interested in adding a custom transition
+> with [`SlideTransition`](https://api.flutter.dev/flutter/widgets/SlideTransition-class.html)
+> to create a sliding animation
+> between pages
+> and learn more about tweening,
+> please check https://docs.flutter.dev/cookbook/animation/page-route-animation.
+
+As you can see,
+this animation is transitioning
+into the `NewTodoPage()`,
+which we've yet implemented.
+
+Let's just create this page 
+so we can check if the navigation works.
+
+```dart
+class NewTodoPage extends StatefulWidget {
+  const NewTodoPage({super.key});
+
+  @override
+  State<NewTodoPage> createState() => _NewTodoPageState();
+}
+
+class _NewTodoPageState extends State<NewTodoPage> {
+  // https://stackoverflow.com/questions/61425969/is-it-okay-to-use-texteditingcontroller-in-statelesswidget-in-flutter
+  TextEditingController txtFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    txtFieldController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text("centered"));
+  }
+}
+```
+
+Let's run the app to see if the person
+is navigated into the new page
+after tapping the `TextField`.
+
+<p align='center'>
+    <img width="250" alt="navigation" src="https://user-images.githubusercontent.com/17494745/227527360-7ec2a776-2c45-402e-9b2d-ba4a35e9882e.gif">
+</p>
+
+
+Awesome! 🎉
+
+
+### 6.3 Creating the `NewTodoPage`
+
+
+Now that's sorted,
+let's change our `NewTodoPage`!
+Locate the `_NewTodoPageState`
+`build` function 
+and replace with the following.
+
+```dart
+  Widget build(BuildContext context) {
+
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double textfieldFontSize = deviceWidth * .07;
+    double buttonFontSize = deviceWidth * .06;
+
+    return MaterialApp(
+        home: Scaffold(
+            appBar: NavigationBar(
+              givenContext: context,
+              showGoBackButton: true,
+            ),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
+                child: Column(
+                  children: [
+                    // Textfield that is expanded and borderless
+                    Expanded(
+                      child: TextField(
+                        key: textfieldOnNewPageKey,
+                        controller: txtFieldController,
+                        expands: true,
+                        maxLines: null,
+                        autofocus:true,
+                        style: TextStyle(fontSize: textfieldFontSize),
+                        decoration: InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                            hintText: 'Capture more things on your mind...',
+                            hintMaxLines: 2,
+                            hintStyle: TextStyle(fontSize: textfieldFontSize)),
+                        textAlignVertical: TextAlignVertical.top,
+                      ),
+                    ),
+
+                    // Save button.
+                    // When submitted, it adds a new todo item, clears the controller and navigates back
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: ElevatedButton(
+                        key: saveButtonKey,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 75, 192, 169),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        onPressed: () {
+                          final value = txtFieldController.text;
+                          if (value.isNotEmpty) {
+                            // Create new item and create AddTodo event
+                            Item newTodoItem = Item(description: value);
+                            BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(newTodoItem));
+
+                            // Clear textfield
+                            txtFieldController.clear();
+
+                            // Go back to home page
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Text(
+                          'Save',
+                          style: TextStyle(fontSize: buttonFontSize),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )));
+  }
+```
+
+As you can see,
+we are reusing some code that was previously in `HomePage`.
+
+- the `TextField` is almost the same,
+except it is expanded to fill the whole screen
+by setting the `expands` and `maxLines` parameters.
+- we are adding a `Save` button which,
+when tapped,
+creates a new todo item and returns back to the previous page.
+
+With both of these new components,
+we need to add keys to later test them.
+
+```dart
+final textfieldOnNewPageKey = UniqueKey();
+final saveButtonKey = UniqueKey();
+```
+
+### 6.4 Fix failing tests
+
+Now that we've implemented the navigation
+and a new page,
+we've broken our tests.
+
+Replace the `test/widget/widget_test.dart` code 
+with the following.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo/main.dart';
+
+void main() {
+  testWidgets('Build correctly setup and is loaded', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pump();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+  });
+
+  testWidgets('Adding a new todo item shows a card', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Type text into todo input
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
+    expect(
+        find.descendant(
+          of: find.byKey(textfieldOnNewPageKey),
+          matching: find.text('new todo'),
+        ),
+        findsOneWidget);
+
+    // Tap "Save" button to add new todo item
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Input is cleared
+    expect(
+      find.descendant(
+        of: find.byKey(textfieldOnNewPageKey),
+        matching: find.text('new todo'),
+      ),
+      findsNothing,
+    );
+
+    // Pump the widget so it renders the new item
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Expect to find at least one widget, pertaining to the one that was added
+    expect(find.byKey(itemCardWidgetKey), findsOneWidget);
+  });
+
+  testWidgets('Adding a new todo item and checking it as done', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Type text into todo input and tap "Save" button to add new todo item
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Pump the widget so it renders the new item
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Expect to find at least one widget, pertaining to the one that was added
+    expect(find.byKey(itemCardWidgetKey), findsOneWidget);
+
+    // Getting widget to test its value
+    Finder checkboxFinder = find.descendant(of: find.byKey(itemCardWidgetKey), matching: find.byType(Icon));
+    Icon checkboxWidget = tester.firstWidget<Icon>(checkboxFinder);
+
+    expect(checkboxWidget.icon, Icons.check_box_outline_blank);
+
+    // Tap on item card
+    await tester.tap(find.byKey(itemCardWidgetKey));
+    await tester.pump(const Duration(seconds: 2));
+
+    // Updating item card widget and checkbox value should be true
+    checkboxWidget = tester.firstWidget<Icon>(checkboxFinder);
+    expect(checkboxWidget.icon, Icons.check_box);
+  });
+
+  testWidgets('Adding a new todo item and clicking timer button', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Type text into todo input and tap "Save" button to add new todo item
+    await tester.enterText(find.byKey(textfieldOnNewPageKey), 'new todo');
+    await tester.tap(find.byKey(saveButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Pump the widget so it renders the new item
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Expect to find at least one widget, pertaining to the one that was added
+    expect(find.byKey(itemCardWidgetKey), findsOneWidget);
+
+    // Getting widget to test its value
+    ElevatedButton buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
+
+    // Button should be stopped
+    Text buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Start");
+
+    // Tap on timer button.
+    await tester.tap(find.byKey(itemCardTimerButtonKey));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    // Updating widget and button should be ongoing
+    buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
+    buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Stop");
+
+    // Tap on timer button AGAIN
+    await tester.tap(find.byKey(itemCardTimerButtonKey));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    // Updating widget and button should be stopped
+    buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
+    buttonText = buttonWidget.child as Text;
+    expect(buttonText.data, "Resume");
+  });
+
+  testWidgets('Navigate to new page and go back', (WidgetTester tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    // Find the text input and string stating 0 todos created
+    expect(find.byKey(textfieldKey), findsOneWidget);
+    expect(find.byKey(itemCardWidgetKey), findsNothing);
+
+    // Tap textfield to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Go back to the page
+    expect(find.byKey(textfieldKey), findsNothing);
+
+    await tester.tap(find.byKey(backButtonKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // User went back to the home page
+    expect(find.byKey(textfieldKey), findsOneWidget);
+  });
+}
+```
+
+We've made two fundamental changes:
+
+- we've added a new test to simulate
+the person going back from the `NewTodoPage`.
+- the `TextField` that the person uses to input text
+to create a new todo item
+is a different one - it is located in the `NewTodoPage`.
+Therefore, we tap the original `TextField`
+inside the `HomePage` to navigate into the new page,
+instead of emulating user input in it.
+
+And that's it!
+If we run the tests,
+all should pass!
+
+```sh
+00:03 +18: All tests passed!  
+```
+
+Hurray! 🥳
+
+Now let's run the app and see how it fares!
+
+<p align='center'>
+    <img width="250" alt="final_changed" src="https://user-images.githubusercontent.com/17494745/230067553-94be69dd-66ca-49c0-bee2-98aca97b6a2b.gif">
+</p>
+
+
+Looking awesome!
+We ought to be done!
+We've successfully added navigation with a sliding animation
+and it now resembles the Figma wireframes we've shown before!
+
 # I need help! ❓
 If you have some feedback or have any question, 
 do not hesitate and open an 
-[issue](https://github.com/dwyl/flutter-bloc-tutorial/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)! 
+[issue](https://github.com/dwyl/flutter-bloc-tutorial/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)! <br />
 We are here to help and are happy for your contribution!
