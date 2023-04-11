@@ -20,3 +20,4 @@ doc/api/
 *.js.deps
 *.js.map
 coverage
+.DS_Store
