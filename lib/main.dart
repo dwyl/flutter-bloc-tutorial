@@ -201,7 +201,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
 // WIDGETS --------------------------
 
 // Widget for the navigation bar
-class NavigationBar extends StatelessWidget with PreferredSizeWidget {
+class NavigationBar extends StatelessWidget implements PreferredSizeWidget {
   // Boolean that tells the bar to have a button to go to the previous page
   final bool showGoBackButton;
   // Build context for the "go back" button works
