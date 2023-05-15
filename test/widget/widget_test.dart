@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo/main.dart';
@@ -117,7 +118,7 @@ void main() {
     ElevatedButton buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
 
     // Button should be stopped
-    Text buttonText = buttonWidget.child as Text;
+    AutoSizeText buttonText = buttonWidget.child as AutoSizeText;
     expect(buttonText.data, "Start");
 
     // Tap on timer button.
@@ -127,7 +128,7 @@ void main() {
 
     // Updating widget and button should be ongoing
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
-    buttonText = buttonWidget.child as Text;
+    buttonText = buttonWidget.child as AutoSizeText;
     expect(buttonText.data, "Stop");
 
     // Tap on timer button AGAIN
@@ -137,7 +138,7 @@ void main() {
 
     // Updating widget and button should be stopped
     buttonWidget = tester.firstWidget<ElevatedButton>(find.byKey(itemCardTimerButtonKey));
-    buttonText = buttonWidget.child as Text;
+    buttonText = buttonWidget.child as AutoSizeText;
     expect(buttonText.data, "Resume");
   });
 
