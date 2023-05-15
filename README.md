@@ -70,6 +70,7 @@ Use these links to skip straight to the section that interests you:
       - [6.2.3 Navigating to `NewTodoPage`](#623-navigating-to-newtodopage)
     - [6.3 Creating the `NewTodoPage`](#63-creating-the-newtodopage)
     - [6.4 Fix failing tests](#64-fix-failing-tests)
+    - [6.5 Alternative text responsiveness](#65-alternative-text-responsiveness)
 - [I need help! ❓](#i-need-help-)
 
 
@@ -3315,6 +3316,33 @@ Looking awesome!
 We ought to be done!
 We've successfully added navigation with a sliding animation
 and it now resembles the Figma wireframes we've shown before!
+
+### 6.5 Alternative text responsiveness
+
+We have our text objects react to the width of the screen.
+However, in bigger screens, 
+the text becomes *too big*.
+We want to make the text responsive
+and change accordingly in case the contents
+exceed the width of its boundaries.
+
+In order to have our app adapt to bigger screens,
+we can leverage two packages
+that will make it easy for us
+to adapt the `Text` and `Textfield` objects
+on bigger screens:
+- [`auto_size_text`](https://pub.dev/packages/auto_size_text) for `Text` widgets.
+- [`auto_size_text_field`](https://pub.dev/packages/auto_size_text_field)
+for `Textfield` widgets.
+
+If you are curious to see the changes needed 
+for the tests and the widgets,
+please check the following commits:
+
+-  [`7ef7198`](https://github.com/dwyl/flutter-bloc-tutorial/pull/5/commits/7ef719858bde6b69750eb8b414f8a241b7bef8b2)
+for changes on the widgets.
+- [45b96b5](https://github.com/dwyl/flutter-bloc-tutorial/pull/5/commits/45b96b56686c7c71206a16d9adde8420d24a7b48)
+for tests.
 
 # I need help! ❓
 If you have some feedback or have any question, 
