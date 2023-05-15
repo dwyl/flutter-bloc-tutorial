@@ -61,10 +61,9 @@ class HomePage extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).push(navigateToNewTodoItemPage());
                         },
-                        minFontSize: 16,
+                        minFontSize: 24,
                         stepGranularity: 4,
-                        maxLines: 1,
-                        maxFontSize: 80,
+                        maxLines: 2,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'Capture more things on your mind...'),
                         textAlignVertical: TextAlignVertical.top),
@@ -149,7 +148,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                       maxLines: null,
                       autofocus: true,
                       maxFontSize: 50,
-                      minFontSize: 18,
+                      minFontSize: 24,
                       decoration: const InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'start typing'),
                       textAlignVertical: TextAlignVertical.top,
                     ),
@@ -182,7 +181,7 @@ class _NewTodoPageState extends State<NewTodoPage> {
                       child: const AutoSizeText(
                         'Save',
                         maxLines: 1,
-                        presetFontSizes: [48, 20, 14],
+                        presetFontSizes: [25, 14],
                       ),
                     ),
                   ),
