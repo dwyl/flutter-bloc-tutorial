@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
@@ -39,9 +41,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceWidth = MediaQuery.of(context).size.width;
-    double fontSize = deviceWidth * .07;
-
     return Scaffold(
         appBar: NavigationBar(
           givenContext: context,
@@ -55,18 +54,19 @@ class HomePage extends StatelessWidget {
               return SafeArea(
                 child: Column(
                   children: [
-                    TextField(
+                    AutoSizeTextField(
                         key: textfieldKey,
+                        controller: TextEditingController(),
                         keyboardType: TextInputType.none,
-                        maxLines: 2,
                         onTap: () {
                           Navigator.of(context).push(navigateToNewTodoItemPage());
                         },
-                        style: TextStyle(fontSize: fontSize),
-                        decoration: InputDecoration(
-                            border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                            hintText: 'Capture more things on your mind...',
-                            hintStyle: TextStyle(fontSize: fontSize)),
+                        minFontSize: 16,
+                        stepGranularity: 4,
+                        maxLines: 1,
+                        maxFontSize: 80,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'Capture more things on your mind...'),
                         textAlignVertical: TextAlignVertical.top),
 
                     // List of items
@@ -131,10 +131,6 @@ class _NewTodoPageState extends State<NewTodoPage> {
 
   @override
   Widget build(BuildContext context) {
-    double deviceWidth = MediaQuery.of(context).size.width;
-    double textfieldFontSize = deviceWidth * .07;
-    double buttonFontSize = deviceWidth * .06;
-
     return MaterialApp(
         home: Scaffold(
             appBar: NavigationBar(
@@ -146,18 +142,15 @@ class _NewTodoPageState extends State<NewTodoPage> {
                 children: [
                   // Textfield that is expanded and borderless
                   Expanded(
-                    child: TextField(
+                    child: AutoSizeTextField(
                       key: textfieldOnNewPageKey,
                       controller: txtFieldController,
                       expands: true,
                       maxLines: null,
                       autofocus: true,
-                      style: TextStyle(fontSize: textfieldFontSize),
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                          hintText: 'start typing',
-                          hintMaxLines: 2,
-                          hintStyle: TextStyle(fontSize: textfieldFontSize)),
+                      maxFontSize: 50,
+                      minFontSize: 18,
+                      decoration: const InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'start typing'),
                       textAlignVertical: TextAlignVertical.top,
                     ),
                   ),
@@ -186,9 +179,10 @@ class _NewTodoPageState extends State<NewTodoPage> {
                           Navigator.pop(context);
                         }
                       },
-                      child: Text(
+                      child: const AutoSizeText(
                         'Save',
-                        style: TextStyle(fontSize: buttonFontSize),
+                        maxLines: 1,
+                        presetFontSizes: [48, 20, 14],
                       ),
                     ),
                   ),
@@ -328,8 +322,7 @@ class _ItemCardState extends State<ItemCard> {
     double deviceWidth = MediaQuery.of(context).size.width;
 
     double descriptionFontSize = deviceWidth * .07;
-    double stopwatchFontSize = deviceWidth * .055;
-    double buttonFontSize = deviceWidth * .05;
+    double checkboxSize = deviceWidth > 425 ? 30 : 20;
 
     return Container(
       key: itemCardWidgetKey,
@@ -346,17 +339,18 @@ class _ItemCardState extends State<ItemCard> {
         // Checkbox-style icon showing if it's completed or not
         leading: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             widget.item.completed
                 ? Icon(
                     Icons.check_box,
                     color: const Color.fromARGB(255, 126, 121, 121),
-                    size: deviceWidth * 0.07,
+                    size: checkboxSize,
                   )
                 : Icon(
                     Icons.check_box_outline_blank,
                     color: Colors.black,
-                    size: deviceWidth * 0.07,
+                    size: checkboxSize,
                   ),
           ],
         ),
@@ -367,7 +361,10 @@ class _ItemCardState extends State<ItemCard> {
             Expanded(
               child: Container(
                 margin: const EdgeInsets.only(right: 16.0),
-                child: Text(widget.item.description,
+                child: AutoSizeText(widget.item.description,
+                    maxLines: 1,
+                    minFontSize: 10,
+                    maxFontSize: 25,
                     style: TextStyle(
                         fontSize: descriptionFontSize,
                         decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
@@ -379,7 +376,8 @@ class _ItemCardState extends State<ItemCard> {
             // Stopwatch and timer button
             Column(
               children: [
-                Text(formatTime(_stopwatch.elapsedMilliseconds), style: TextStyle(color: Colors.black54, fontSize: stopwatchFontSize)),
+                AutoSizeText(formatTime(_stopwatch.elapsedMilliseconds),
+                    maxLines: 1, minFontSize: 10, maxFontSize: 40, style: const TextStyle(color: Colors.black54)),
 
                 // If the item is completed, we hide the button
                 if (!widget.item.completed)
@@ -390,9 +388,11 @@ class _ItemCardState extends State<ItemCard> {
                         elevation: 0,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                     onPressed: _handleButtonClick,
-                    child: Text(
+                    child: AutoSizeText(
                       _renderButtonText(),
-                      style: TextStyle(fontSize: buttonFontSize),
+                      maxLines: 1,
+                      minFontSize: 10,
+                      maxFontSize: 30,
                     ),
                   ),
               ],

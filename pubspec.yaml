@@ -13,6 +13,8 @@ dependencies:
   bloc_test: ^9.1.1
   equatable: ^2.0.0
   uuid: ^3.0.6
+  auto_size_text: ^3.0.0
+  auto_size_text_field: ^2.2.1
 
 dev_dependencies:
   flutter_test:
