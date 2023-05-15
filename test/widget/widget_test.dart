@@ -161,5 +161,16 @@ void main() {
 
     // User went back to the home page
     expect(find.byKey(textfieldKey), findsOneWidget);
+
+    // Tap textfield again to open new page to create todo item
+    await tester.tap(find.byKey(textfieldKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // Tap on the logo icon. Person should go back.
+    await tester.tap(find.byKey(logoKey));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    // User went back to the home page
+    expect(find.byKey(textfieldKey), findsOneWidget);
   });
 }
