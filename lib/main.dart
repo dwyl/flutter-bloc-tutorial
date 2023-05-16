@@ -360,10 +360,19 @@ class _ItemCardState extends State<ItemCard> {
       constraints: const BoxConstraints(minHeight: 70),
       child: ListTile(
         onTap: () {
-          // Create a ToggleTodo event to toggle the `complete` field
-          // ONLY if the timer is stopped
+          // If the stopwatch is not running, we mark toggle it
           if (!_stopwatch.isRunning) {
             context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+          } 
+          
+          // If the stopwatch is running, we toggle the item but also stop the timer
+          else {
+            context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+            widget.item.stopTimer();
+            _stopwatch.stop();
+
+            // Re-render
+            setState(() {});
           }
         },
 
