@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
+import 'package:todo/breakpoints.dart';
 import 'package:todo/stopwatch.dart';
 import 'package:todo/item.dart';
 import 'package:todo/utils.dart';
@@ -54,19 +53,35 @@ class HomePage extends StatelessWidget {
               return SafeArea(
                 child: Column(
                   children: [
-                    AutoSizeTextField(
-                        key: textfieldKey,
-                        controller: TextEditingController(),
-                        keyboardType: TextInputType.none,
-                        onTap: () {
-                          Navigator.of(context).push(navigateToNewTodoItemPage());
-                        },
-                        minFontSize: 24,
-                        stepGranularity: 4,
-                        maxLines: 2,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'Capture more things on your mind...'),
-                        textAlignVertical: TextAlignVertical.top),
+                    ResponsiveLayout(
+                      // On mobile
+                      mobileBody: TextField(
+                          key: textfieldKey,
+                          controller: TextEditingController(),
+                          keyboardType: TextInputType.none,
+                          onTap: () {
+                            Navigator.of(context).push(navigateToNewTodoItemPage());
+                          },
+                          maxLines: 2,
+                          style: const TextStyle(fontSize: 20),
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'Capture more things on your mind...'),
+                          textAlignVertical: TextAlignVertical.top),
+
+                      // On tablet
+                      tabletBody: TextField(
+                          key: textfieldKey,
+                          controller: TextEditingController(),
+                          keyboardType: TextInputType.none,
+                          onTap: () {
+                            Navigator.of(context).push(navigateToNewTodoItemPage());
+                          },
+                          maxLines: 2,
+                          style: const TextStyle(fontSize: 30),
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'Capture more things on your mind...'),
+                          textAlignVertical: TextAlignVertical.top),
+                    ),
 
                     // List of items
                     Expanded(
@@ -141,16 +156,30 @@ class _NewTodoPageState extends State<NewTodoPage> {
                 children: [
                   // Textfield that is expanded and borderless
                   Expanded(
-                    child: AutoSizeTextField(
-                      key: textfieldOnNewPageKey,
-                      controller: txtFieldController,
-                      expands: true,
-                      maxLines: null,
-                      autofocus: true,
-                      maxFontSize: 50,
-                      minFontSize: 24,
-                      decoration: const InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'start typing'),
-                      textAlignVertical: TextAlignVertical.top,
+                    child: ResponsiveLayout(
+                      // On mobile
+                      mobileBody: TextField(
+                        key: textfieldOnNewPageKey,
+                        controller: txtFieldController,
+                        expands: true,
+                        maxLines: null,
+                        autofocus: true,
+                        style: const TextStyle(fontSize: 20),
+                        decoration: const InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'start typing'),
+                        textAlignVertical: TextAlignVertical.top,
+                      ),
+
+                      // On tablet
+                      tabletBody: TextField(
+                        key: textfieldOnNewPageKey,
+                        controller: txtFieldController,
+                        expands: true,
+                        maxLines: null,
+                        autofocus: true,
+                        style: const TextStyle(fontSize: 30),
+                        decoration: const InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.zero), hintText: 'start typing'),
+                        textAlignVertical: TextAlignVertical.top,
+                      ),
                     ),
                   ),
 
@@ -178,11 +207,15 @@ class _NewTodoPageState extends State<NewTodoPage> {
                           Navigator.pop(context);
                         }
                       },
-                      child: const AutoSizeText(
-                        'Save',
-                        maxLines: 1,
-                        presetFontSizes: [25, 14],
-                      ),
+                      child: const ResponsiveLayout(
+                          mobileBody: Text(
+                            'Save',
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          tabletBody: Text(
+                            'Save',
+                            style: TextStyle(fontSize: 40),
+                          )),
                     ),
                   ),
                 ],
@@ -320,7 +353,6 @@ class _ItemCardState extends State<ItemCard> {
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
 
-    double descriptionFontSize = deviceWidth * .07;
     double checkboxSize = deviceWidth > 425 ? 30 : 20;
 
     return Container(
@@ -328,10 +360,19 @@ class _ItemCardState extends State<ItemCard> {
       constraints: const BoxConstraints(minHeight: 70),
       child: ListTile(
         onTap: () {
-          // Create a ToggleTodo event to toggle the `complete` field
-          // ONLY if the timer is stopped
+          // If the stopwatch is not running, we mark toggle it
           if (!_stopwatch.isRunning) {
             context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+          } 
+          
+          // If the stopwatch is running, we toggle the item but also stop the timer
+          else {
+            context.read<TodoBloc>().add(ToggleTodoEvent(widget.item));
+            widget.item.stopTimer();
+            _stopwatch.stop();
+
+            // Re-render
+            setState(() {});
           }
         },
 
@@ -360,40 +401,70 @@ class _ItemCardState extends State<ItemCard> {
             Expanded(
               child: Container(
                 margin: const EdgeInsets.only(right: 16.0),
-                child: AutoSizeText(widget.item.description,
-                    maxLines: 1,
-                    minFontSize: 10,
-                    maxFontSize: 25,
-                    style: TextStyle(
-                        fontSize: descriptionFontSize,
-                        decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
-                        fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
-                        color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+                child: ResponsiveLayout(
+                  // On mobile
+                  mobileBody: Text(widget.item.description,
+                      style: TextStyle(
+                          fontSize: 20,
+                          decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                          fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
+                          color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+
+                  // On tablet
+                  tabletBody: Text(widget.item.description,
+                      style: TextStyle(
+                          fontSize: 25,
+                          decoration: widget.item.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                          fontStyle: widget.item.completed ? FontStyle.italic : FontStyle.normal,
+                          color: widget.item.completed ? const Color.fromARGB(255, 126, 121, 121) : Colors.black)),
+                ),
               ),
             ),
 
             // Stopwatch and timer button
             Column(
               children: [
-                AutoSizeText(formatTime(_stopwatch.elapsedMilliseconds),
-                    maxLines: 1, minFontSize: 10, maxFontSize: 40, style: const TextStyle(color: Colors.black54)),
+                ResponsiveLayout(
+                  // On mobile
+                  mobileBody: Text(formatTime(_stopwatch.elapsedMilliseconds), maxLines: 1, style: const TextStyle(color: Colors.black54)),
+
+                  // On tablet
+                  tabletBody:
+                      Text(formatTime(_stopwatch.elapsedMilliseconds), maxLines: 1, style: const TextStyle(color: Colors.black54, fontSize: 18)),
+                ),
 
                 // If the item is completed, we hide the button
                 if (!widget.item.completed)
-                  ElevatedButton(
-                    key: itemCardTimerButtonKey,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: _renderButtonBackground(),
-                        elevation: 0,
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-                    onPressed: _handleButtonClick,
-                    child: AutoSizeText(
-                      _renderButtonText(),
-                      maxLines: 1,
-                      minFontSize: 10,
-                      maxFontSize: 30,
-                    ),
-                  ),
+                  ResponsiveLayout(
+
+                      // On mobile
+                      mobileBody: ElevatedButton(
+                        key: itemCardTimerButtonKey,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: _renderButtonBackground(),
+                            elevation: 0,
+                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                        onPressed: _handleButtonClick,
+                        child: Text(
+                          _renderButtonText(),
+                          maxLines: 1,
+                        ),
+                      ),
+
+                      // On tablet
+                      tabletBody: ElevatedButton(
+                        key: itemCardTimerButtonKey,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: _renderButtonBackground(),
+                            elevation: 0,
+                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                        onPressed: _handleButtonClick,
+                        child: Text(
+                          _renderButtonText(),
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      )),
               ],
             )
           ],

@@ -3327,22 +3327,74 @@ and change accordingly in case the contents
 exceed the width of its boundaries.
 
 In order to have our app adapt to bigger screens,
-we can leverage two packages
-that will make it easy for us
-to adapt the `Text` and `Textfield` objects
-on bigger screens:
-- [`auto_size_text`](https://pub.dev/packages/auto_size_text) for `Text` widgets.
-- [`auto_size_text_field`](https://pub.dev/packages/auto_size_text_field)
-for `Textfield` widgets.
+we can create a simple widget
+that will render whatever we want
+according to **screen width breakpoints**.
 
-If you are curious to see the changes needed 
-for the tests and the widgets,
-please check the following commits:
+Let's create a file called
+`breakpoints.dart` inside `lib`
+and use the following code.
 
--  [`7ef7198`](https://github.com/dwyl/flutter-bloc-tutorial/pull/5/commits/7ef719858bde6b69750eb8b414f8a241b7bef8b2)
-for changes on the widgets.
-- [45b96b5](https://github.com/dwyl/flutter-bloc-tutorial/pull/5/commits/45b96b56686c7c71206a16d9adde8420d24a7b48)
-for tests.
+```dart
+import 'package:flutter/material.dart';
+
+const kMobileBreakpoint = 425.0;
+const kTabletBreakpoint = 768.0;
+const kDesktopBreakpoint = 1024.0;
+const kDesktopLargeBreakpoint = 1440.0;
+
+class ResponsiveLayout extends StatelessWidget {
+  final Widget mobileBody;
+  final Widget? tabletBody;
+  final Widget? desktopBody;
+
+  const ResponsiveLayout({super.key, required this.mobileBody, this.tabletBody, this.desktopBody});
+
+  @override
+  Widget build(BuildContext context) {
+
+    double deviceWidth = MediaQuery.of(context).size.width;
+
+    return LayoutBuilder(builder: (_, __) {
+      if (deviceWidth < kMobileBreakpoint) {
+        return mobileBody;
+      } else if (deviceWidth < kTabletBreakpoint) {
+        return tabletBody ?? mobileBody;
+      } else {
+        return desktopBody ?? tabletBody ?? mobileBody;
+      }
+    });
+  }
+}
+```
+
+We are using `MediaQuery` 
+to conditionally render content
+with [`LayoutBuilder`](https://docs.flutter.dev/ui/layout/adaptive-responsive).
+
+And now we just need to use this widget
+to render widget according to different 
+screen sizes.
+We can do it like so,
+for example:
+
+```dart
+const ResponsiveLayout(
+mobileBody: Text(
+  'Save',
+  style: TextStyle(fontSize: 24),
+),
+tabletBody: Text(
+  'Save',
+  style: TextStyle(fontSize: 40),
+)),
+```
+
+
+If you are curious to see the changes needed,
+please check the following commit
+[`1b3dfc3`](https://github.com/dwyl/flutter-bloc-tutorial/pull/7/commits/1b3dfc30abb9ee6d8f3b27fc15447f9bc9210d6b).
+
 
 # I need help! ❓
 If you have some feedback or have any question, 
